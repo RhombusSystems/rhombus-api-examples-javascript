@@ -9,7 +9,7 @@ The code demos how to send API requests to Rhombus using API token authenticatio
 ## Installation
 
 1. Clone the repo with `git clone https://github.com/RhombusSystems/rhombus-api-examples-javascript` 
-2. Run ``
+2. Run `curl https://raw.githubusercontent.com/RhombusSystems/rhombus-api-examples-codegen/main/install.sh | bash` in the root directory
 3. Run `npm install` in the root directory
 4. Create a `.env` file in the root source directory using the following structure (without the angle brackets)
 
