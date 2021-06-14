@@ -39,7 +39,7 @@ export interface MediaURIResult {
   *
   * @param {Configuration} [config] The API configuration for sending requests to Rhombus
   * @param {string} [camUUID] The UUID of the camera to get info for
-  * @param {number} [duration] How long the federated token should last
+  * @param {number} [duration] How long the federated token should last in seconds
   * @param {URIType} [type] Whether to use LAN or WAN for the connection, by default LAN and unless you are on a different connection, you should really just use LAN
   *
   *
