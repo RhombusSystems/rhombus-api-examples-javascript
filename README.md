@@ -1,24 +1,10 @@
-# Rhombus Identifier
+# Rhombus API Examples Javascript
 
 ## What is this
-Rhombus Identifier is a NodeJS server application written in Typescript that identifies objects in Rhombus Systems cameras using the Tensorflow COCO model. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
+This repo contains demo code samples in NodeJS using Javascript and Typescript that show how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). 
 
-The code demos how to send API requests to Rhombus using API token authentication and how to download VODs from Rhombus.
+This repo uses [Rhombus Codegen](https://github.com/RhombusSystems/rhombus-api-examples-codegen) to interface with the API for many of its examples
 
 
 ## Installation
-
-1. Clone the repo with `git clone https://github.com/RhombusSystems/rhombus-api-examples-javascript` 
-2. Run `curl https://raw.githubusercontent.com/RhombusSystems/rhombus-api-examples-codegen/main/install.sh | bash` in the root directory
-3. Run `npm install` in the root directory
-4. Create a `.env` file in the root source directory using the following structure (without the angle brackets)
-
-    API_KEY=<YOUR API KEY>
-
-    CAM_UUID=<YOUR CAMERA UUID>
-
-    CONNECTION_TYPE=<WAN OR LAN> 
-
-NOTE: CONNECTION_TYPE param is optional, but it will specify whether to use a WAN or LAN connection from the camera to download the VODs. It is by default LAN and unless the NodeJS server is running on a separate wifi from the camera, which would be very unlikely...
-
-5. Run the app using `npm run start`
+For instructions of how to build and install, refer to the README.md in each of the module directories. You do not have to generate the RhombusTypescriptAPI for each of the examples, you only need to do this step once

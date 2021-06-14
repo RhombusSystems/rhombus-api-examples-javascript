@@ -20,7 +20,7 @@
     "url": "https://github.com/RhombusSystems/rhombus-api-examples-javascript/issues"
   },
   "dependencies": {
-    "@rhombus/API": "file:./RhombusTypescriptAPI",
+    "@rhombus/API": "file:../RhombusTypescriptAPI",
     "@tensorflow-models/coco-ssd": "^2.2.2",
     "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs-backend-cpu": "^3.6.0",
