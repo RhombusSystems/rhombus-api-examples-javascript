@@ -179,7 +179,6 @@ export const ClassifyDirectory = async (model: ObjectDetection, directory: strin
 			t: (box.position.y / dimensions.y) * 10000, // Top
 			ts: box.timestamp,
 			cdn: box.label,
-			ro: [box.label],
 		});
 	}
 
