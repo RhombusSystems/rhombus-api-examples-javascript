@@ -13,7 +13,7 @@ The code demos how to send API requests to Rhombus using API token authenticatio
 NOTE: If you have already generated the Typescript client and have a RhombusTypescriptAPIdirectory in the root source directory, then steps 1 and 2 are optional
 
 1. Clone the repo with `git clone https://github.com/RhombusSystems/rhombus-api-examples-javascript` 
-2. Run `curl https://raw.githubusercontent.com/RhombusSystems/rhombus-api-examples-codegen/main/install.sh | bash` in the root directory
+2. Run `curl https://raw.githubusercontent.com/RhombusSystems/rhombus-api-examples-codegen/main/typescript/install.sh | bash` in the root directory
 
 ### Running the demo
 
