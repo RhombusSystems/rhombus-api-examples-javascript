@@ -13,9 +13,11 @@ export const GetHumanEvents = async (config: Configuration, camUuid: string, sta
 	let ids = new Map<number, FootageBoundingBoxType[]>();
 
 	const res = await api.getFootageBoundingBoxes({ cameraUuid: camUuid, startTime: startTime, duration: duration }, RHOMBUS_HEADERS);
+
 	let rawEvents: FootageBoundingBoxType[] = res.footageBoundingBoxes.filter((event) => event.a == ActivityEnum.MOTIONHUMAN);
 
 	rawEvents.forEach(event => {
+		if (event.ts < startTime) return;
 		if (!ids.has(event.objectId)) {
 			ids.set(event.objectId, [event]);
 		} else {
@@ -24,7 +26,7 @@ export const GetHumanEvents = async (config: Configuration, camUuid: string, sta
 	});
 
 	ids.forEach((events) => {
-		if (events.length < 2) {
+		if (events.length < 1) {
 			ids.delete(events[0].objectId);
 		}
 	});
@@ -45,7 +47,8 @@ export const GetHumanEvents = async (config: Configuration, camUuid: string, sta
 				position: position,
 				dimensions: dimensions,
 				id: box.objectId,
-				timestamp: box.ts
+				timestamp: box.ts,
+				camUUID: camUuid,
 			};
 
 

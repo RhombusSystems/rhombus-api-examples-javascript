@@ -1,17 +1,17 @@
 import { HumanEvent } from "../types/human_event"
 
-export const DetectEdgeEvents = (allEvents: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
+export enum EdgeEventsType {
+	Begin,
+	End,
+};
+
+export const DetectEdgeEvents = (allEvents: Map<number, HumanEvent[]>, type: EdgeEventsType): Map<number, HumanEvent[]> => {
 	let edgeEvents: Map<number, HumanEvent[]> = new Map();
 
 	allEvents.forEach((events) => {
-		let i = 0;
-		for (let event of events) {
-			if (i == events.length - 1) {
-				if (event.position.x < 0.2 || event.position.x > 0.8) {
-					edgeEvents.set(event.id, events);
-				}
-			}
-			i++;
+		const event = type == EdgeEventsType.Begin ? events[0] : events[events.length - 1];
+		if (event.position.x < 0.25 || event.position.x > 0.75) {
+			edgeEvents.set(event.id, events);
 		}
 	});
 

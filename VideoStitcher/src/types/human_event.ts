@@ -5,4 +5,5 @@ export interface HumanEvent {
 	dimensions: Vec2;
 	id: number;
 	timestamp: number;
+	camUUID: string;
 };
