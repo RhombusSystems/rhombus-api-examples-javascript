@@ -10,9 +10,16 @@ export const DetectEdgeEvents = (allEvents: Map<number, HumanEvent[]>, type: Edg
 
 	allEvents.forEach((events) => {
 		const event = type == EdgeEventsType.Begin ? events[0] : events[events.length - 1];
-		if (event.position.x < 0.25 || event.position.x > 0.75) {
-			edgeEvents.set(event.id, events);
+		if (type == EdgeEventsType.End) {
+			if (event.position.x < 0.25 || event.position.x > 0.75) {
+				edgeEvents.set(event.id, events);
+			}
+		} else {
+			if (event.position.x < 0.5 || event.position.x > 0.5) {
+				edgeEvents.set(event.id, events);
+			}
 		}
+
 	});
 
 	return edgeEvents;

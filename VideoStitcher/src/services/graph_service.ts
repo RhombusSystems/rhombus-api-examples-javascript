@@ -23,6 +23,7 @@ export const SortHumanEvents = (a: HumanEvent, b: HumanEvent) => {
 }
 
 export const SendGraph = (msg: PlotGraphMessage) => {
+	if (!msg) return;
 	msg.events.sort(SortHumanEvents);
 	msg.relatedEvents.sort(SortHumanEvents);
 	IOServer.Emit("Plot-Graph", msg);

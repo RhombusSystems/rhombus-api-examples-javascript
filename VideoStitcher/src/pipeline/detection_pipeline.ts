@@ -8,6 +8,7 @@ import { DetectEdgeEvents, EdgeEventsType } from "../services/edge_event_detecto
 import { IsolateObjectIDEvents } from "../services/object_id_isolator"
 import { IsolateVelocities } from "../services/velocity_isolator"
 import { IsolateEventsFromLength } from "../services/event_length_isolator"
+import { CollateEvents } from "../services/event_collator"
 
 export const DetectionPipeline = async (configuration: Configuration, camUUID: string): Promise<Map<number, HumanEvent[]>> => {
 	const duration = 10 * 60;
@@ -20,7 +21,7 @@ export const DetectionPipeline = async (configuration: Configuration, camUUID: s
 	// Not working because multiple people
 	// Almost there 1623962260
 	// IT FUCKING WORKS 1623963641
-	const res = await GetHumanEvents(configuration, camUUID, 1623963641, duration);
+	const res = CollateEvents(await GetHumanEvents(configuration, camUUID, 1623970642, duration));
 
 	console.log(res.size + " human events found");
 

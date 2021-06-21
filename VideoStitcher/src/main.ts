@@ -2,10 +2,11 @@
   *
   * @import necessary services
   * */
-import { SendGraph } from "./services/graph_service"
+import { SendGraph, PlotGraphMessage } from "./services/graph_service"
 
 import { DetectionPipeline } from "./pipeline/detection_pipeline"
 import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
+import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
 
 /*
   *
@@ -43,16 +44,22 @@ export const main = async (apiKey: string, camUUID: string, type: ConnectionType
 	// Create a `Configuration` which will use our API key, this config will be used in all further API calls
 	const configuration = new Configuration({ apiKey: apiKey });
 
-	let res = await DetectionPipeline(configuration, camUUID);
+	let res = undefined;
 
-	let msg = await RelatedEventsPipeline(configuration, camUUID, res);
+	let msg: PlotGraphMessage = undefined;
+
 
 	setInterval(() => SendGraph(msg), 1000);
 
 	setInterval(async () => {
 		res = await DetectionPipeline(configuration, camUUID);
 		if (res.size > 0) {
-			msg = await RelatedEventsPipeline(configuration, camUUID, res);
+			const relatedEventsRes = await RelatedEventsPipeline(configuration, camUUID, res);
+			msg = relatedEventsRes.graphMsg;
+			if (relatedEventsRes.relatedEvents.length > 0) {
+				console.log("Combining clips");
+				ClipCombinerPipeline(configuration, type, [msg.events].concat(relatedEventsRes.relatedEvents));
+			}
 		}
 	}, 10000);
 }

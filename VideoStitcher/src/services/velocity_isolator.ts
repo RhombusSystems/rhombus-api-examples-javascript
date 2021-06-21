@@ -18,10 +18,8 @@ export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeE
 
 		}
 
-		if (Math.abs(velocity) < 0.025) {
+		if (Math.abs(velocity) < 0.013) {
 			events.delete(finalEvent.id);
-			// console.log("Velocity didn't make the cut " + velocity);
-			// console.log("https://console.rhombussystems.com/devices/cameras/" + process.env.CAM_UUID + "/?t=" + finalEvent.timestamp)
 		} else {
 
 			const movingRight = velocity > 0;
@@ -36,17 +34,14 @@ export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeE
 					events.delete(finalEvent.id);
 				}
 			} else if (type == EdgeEventsType.Begin) {
-				console.log("Begin");
-				const eventOnRight = beginEvent.position.x > 0.75;
-				const eventOnLeft = beginEvent.position.x < 0.25;
+				const eventOnRight = beginEvent.position.x > 0.5;
+				const eventOnLeft = beginEvent.position.x < 0.5;
 				if (movingLeft && eventOnLeft) {
 					events.delete(beginEvent.id);
+					console.log("Velocity didn't make the cut " + velocity);
 				} else if (movingRight && eventOnRight) {
 					events.delete(beginEvent.id);
-				} else {
-					console.log("Begin counts: " + velocity + ", " + beginEvent.position.x + ", " + es[1].position.x);
-					console.log("https://console.rhombussystems.com/devices/cameras/" + camUUID + "/?t=" + beginEvent.timestamp)
-					console.log("https://console.rhombussystems.com/devices/cameras/" + camUUID + "/?t=" + es[1].timestamp)
+					console.log("Velocity didn't make the cut " + velocity);
 				}
 			}
 		}

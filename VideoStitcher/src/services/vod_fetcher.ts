@@ -97,10 +97,8 @@ export const saveClip = async (path: string, uri: string, write: boolean = false
   * @return {Promise<FetchVODResult>} Returns the path of the downloaded vod mp4 and the directory in which that downloaded mp4 is in. 
   * 				      It will also return the timestamp in seconds since epoch of the startTime of the clip
   * */
-export const FetchVOD = async (config: Configuration, federatedToken: string, uri: string, type: ConnectionType, duration: number = 20): Promise<FetchVODResult> => {
-
-	// Get the starting time in seconds. This will be the current time in miliseconds since epoch / 1000 - duration
-	const startTime = Math.round(new Date().getTime() / 1000) - duration;
+export const FetchVOD = async (config: Configuration, federatedToken: string, uri: string, type: ConnectionType, dir: string, fileName: string, startTime: number, endTime: number): Promise<FetchVODResult> => {
+	const duration = endTime - startTime + 1;
 
 	// We need to replace {START_TIME} and {DURATION} with the correct values in order to properly download the file
 	let fullURI = uri.replace("{START_TIME}", startTime.toString()).replace("{DURATION}", duration.toString());
@@ -115,14 +113,13 @@ export const FetchVOD = async (config: Configuration, federatedToken: string, ur
 	axios.defaults.headers.common['Cookie'] = 'RSESSIONID=RFT:' + federatedToken;
 
 	// The directory where we will place our clip is "<PROJECT_ROOT>/res/<startTime>"
-	const dir = "./res/" + startTime + "/";
 
 	// If the directory does not already exist, then we need to create it
 	if (!fs.existsSync(dir))
 		fs.mkdirSync(dir);
 
 	// The path of the clip is dir/clip.mp4 regardless of timestamp. The file is always called clip.mp4
-	const path = dir + "clip.mp4";
+	const path = dir + fileName;
 
 	// This will change depend on whether we are using WAN or LAN
 	const mpdName = type == ConnectionType.LAN ? "clip.mpd" : "file.mpd";
