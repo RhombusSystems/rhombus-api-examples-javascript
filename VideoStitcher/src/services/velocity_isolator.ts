@@ -2,6 +2,8 @@ import { HumanEvent } from "../types/human_event"
 
 import { EdgeEventsType } from "./edge_event_detector"
 
+import { GetVelocity } from "../utils/velocity"
+
 
 export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeEventsType, camUUID: string): Map<number, HumanEvent[]> => {
 	events.forEach((es) => {
@@ -11,17 +13,16 @@ export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeE
 
 		if (type == EdgeEventsType.End) {
 			const determiningEvent = es[es.length - 2];
-			velocity = finalEvent.position.x - determiningEvent.position.x;
+			velocity = GetVelocity(determiningEvent, finalEvent);
 		} else if (type == EdgeEventsType.Begin) {
 			const determiningEvent = es[1];
-			velocity = determiningEvent.position.x - beginEvent.position.x;
+			velocity = GetVelocity(beginEvent, determiningEvent);
 
 		}
 
-		if (Math.abs(velocity) < 0.013) {
+		if (Math.abs(velocity) < 0.05 / 1000) {
 			events.delete(finalEvent.id);
 		} else {
-
 			const movingRight = velocity > 0;
 			const movingLeft = velocity < 0;
 

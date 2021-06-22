@@ -21,4 +21,4 @@ require('dotenv').config()
 // Entry point
 //
 // We are just going to use LAN by default, and if you specify WAN in .env then we will use WAN. There isn't really a reason to do this unless you have to
-main(process.env.API_KEY, process.env.CAM_UUID, process.env.CONNECTION_TYPE == "WAN" ? ConnectionType.WAN : ConnectionType.LAN);
+main(process.env.API_KEY, process.env.CONNECTION_TYPE == "WAN" ? ConnectionType.WAN : ConnectionType.LAN);

@@ -17,7 +17,7 @@ export const GetHumanEvents = async (config: Configuration, camUuid: string, sta
 	let rawEvents: FootageBoundingBoxType[] = res.footageBoundingBoxes.filter((event) => event.a == ActivityEnum.MOTIONHUMAN);
 
 	rawEvents.forEach(event => {
-		if (event.ts < startTime) return;
+		if (event.ts < startTime * 1000) return;
 		if (!ids.has(event.objectId)) {
 			ids.set(event.objectId, [event]);
 		} else {

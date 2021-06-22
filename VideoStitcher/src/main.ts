@@ -6,6 +6,7 @@ import { SendGraph, PlotGraphMessage } from "./services/graph_service"
 
 import { DetectionPipeline } from "./pipeline/detection_pipeline"
 import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
+import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator_pipeline"
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
 
 /*
@@ -24,14 +25,13 @@ import { Configuration } from "@rhombus/API"
 import { IOServer } from "./server/server"
 
 
-
 /*
   *
   * Entry point 
   * @param {string} [apiKey] sets the API key that will be used throughout the application
   *
   * */
-export const main = async (apiKey: string, camUUID: string, type: ConnectionType) => {
+export const main = async (apiKey: string, type: ConnectionType) => {
 	IOServer.StartServer();
 
 
@@ -51,15 +51,23 @@ export const main = async (apiKey: string, camUUID: string, type: ConnectionType
 
 	setInterval(() => SendGraph(msg), 1000);
 
-	setInterval(async () => {
-		res = await DetectionPipeline(configuration, camUUID);
-		if (res.size > 0) {
-			const relatedEventsRes = await RelatedEventsPipeline(configuration, camUUID, res);
-			msg = relatedEventsRes.graphMsg;
-			if (relatedEventsRes.relatedEvents.length > 0) {
-				console.log("Combining clips");
-				ClipCombinerPipeline(configuration, type, [msg.events].concat(relatedEventsRes.relatedEvents));
+	// setInterval(async () => {
+	res = await DetectionPipeline(configuration);
+	if (res.length > 0) {
+		const events = await RelatedEventsPipeline(configuration, res);
+		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
+		msg = relatedEventsRes.msg;
+		SendGraph(msg);
+		console.log(msg);
+		if (relatedEventsRes.events.length > 0) {
+			for (const event of relatedEventsRes.events) {
+				if (event.followingEvent != undefined) {
+					console.log("Combining clips");
+					ClipCombinerPipeline(configuration, type, event);
+				}
 			}
 		}
-	}, 10000);
+		// console.log(JSON.stringify(msg, null, 2));
+	}
+	// }, 3 * 60 * 1000);
 }
