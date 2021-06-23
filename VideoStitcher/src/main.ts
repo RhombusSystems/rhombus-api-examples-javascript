@@ -23,6 +23,7 @@ import { ConnectionType } from "./types/connection_type"
 import { Configuration } from "@rhombus/API"
 
 import { IOServer } from "./server/server"
+import { GetCameraList } from "./services/camera_list"
 
 
 /*
@@ -35,6 +36,7 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	IOServer.StartServer();
 
 
+
 	// Show a warning if running in WAN mode, because this is not recommended
 	if (type == ConnectionType.WAN) {
 		// Print in red
@@ -43,6 +45,9 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	// Create a `Configuration` which will use our API key, this config will be used in all further API calls
 	const configuration = new Configuration({ apiKey: apiKey });
+
+	const camList = await GetCameraList(configuration);
+	console.log(JSON.stringify(camList, null, 2));
 
 	let res = undefined;
 

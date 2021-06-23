@@ -34,7 +34,7 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 		// Need to fix (broken) 1624398830
 		// Go beneath camera (in progress) 1624471346
 		// Basically works as expected (works) 1624488420
-		const res = CollateEvents(await GetHumanEvents(configuration, camera, currentTime, duration));
+		const res = CollateEvents(await GetHumanEvents(configuration, camera.uuid, currentTime, duration));
 
 		console.log(res.size + " human events found");
 
@@ -46,7 +46,7 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 
 		console.log(edgeEvents.size + " were found from being close to the edge");
 
-		const exitEvents = IsolateVelocities(edgeEvents, EdgeEventsType.End, camera);
+		const exitEvents = IsolateVelocities(edgeEvents, EdgeEventsType.End, camera.uuid);
 
 		console.log(exitEvents.size + " were found from velocity");
 

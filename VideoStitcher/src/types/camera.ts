@@ -1,0 +1,7 @@
+import { Vec2 } from "./vector";
+
+export interface Camera{
+    uuid: string;
+    rotationRadians: number;
+    location: Vec2;
+}
