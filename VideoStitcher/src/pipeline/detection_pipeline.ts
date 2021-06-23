@@ -18,21 +18,21 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 
 	for (const camera of cameras) {
 		const duration = 10 * 60;
-		const offset = 0 * 60;
+		const offset = 1 * 60;
 		const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
 		console.log("Current time " + currentTime);
 		console.log(camera);
 
-		// Very very very good timestamp 1623884880
-		// I'm so confused 1623945969
-		// Not working because multiple people
-		// Almost there 1623962260
+		// Unintentional but works really well (works) 1623884880
+		// Sick af because I also didn't even mean to do this (works) 1623945969
+		// Super basic example (works) 1623962260
 		// IT FUCKING WORKS (works) 1623963641
+		// Good simple one (works) 1623969300
 		// Good one for testing (works) 1623970642
-		// Very complicated one (broken) 1624314992
+		// Very complicated one and funny result (broken) 1624314992
 		// Works perfectly (works) 1624317870
 		// Need to fix (broken) 1624398830
-		const res = CollateEvents(await GetHumanEvents(configuration, camera, 1623969300, duration));
+		const res = CollateEvents(await GetHumanEvents(configuration, camera, currentTime, duration));
 
 		console.log(res.size + " human events found");
 

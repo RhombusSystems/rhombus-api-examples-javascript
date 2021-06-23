@@ -5,11 +5,12 @@ import { IsolateHumanEventsFromObjectID } from "../services/object_id_isolator"
 
 export const InternalFinalizeEvents = (event: EnterEvent | ExitEvent): FinalizedEvent => {
 	if (event == undefined) return undefined;
+	const events = IsolateHumanEventsFromObjectID(event.events, true)
 	return {
 		id: event.id,
-		startTime: event.events[0].timestamp,
-		endTime: event.events[event.events.length - 1].timestamp,
-		data: IsolateHumanEventsFromObjectID(event.events, true),
+		startTime: events[0].timestamp,
+		endTime: events[event.events.length - 1].timestamp,
+		data: events,
 		followingEvent: 'relatedEvents' in event ? InternalFinalizeEvents((<ExitEvent>event).relatedEvents[0]) : undefined,
 	};
 }

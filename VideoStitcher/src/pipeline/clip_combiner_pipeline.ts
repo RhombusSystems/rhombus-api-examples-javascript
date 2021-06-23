@@ -51,7 +51,7 @@ export const ClipCombinerPipeline = async (config: Configuration, type: Connecti
 	await DownloadFinalizedEventRecursive(config, type, event, dir)
 
 	try {
-		await run("ffmpeg -f concat -safe 0 -i " + dir + "vidlist.txt -c copy " + dir + "output.mp4");
+		await run(pathToFFMpeg + " -f concat -safe 0 -i " + dir + "vidlist.txt -c copy " + dir + "output.mp4");
 	} catch (e) {
 		console.log("Fuck something went wrong i hate this bug");
 		fs.rmdirSync(dir, { recursive: true });

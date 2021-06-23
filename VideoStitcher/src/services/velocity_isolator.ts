@@ -20,7 +20,7 @@ export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeE
 
 		}
 
-		if (Math.abs(velocity) < 0.05 / 1000) {
+		if (Math.abs(velocity) < 0.025 / 1000) {
 			events.delete(finalEvent.id);
 		} else {
 			const movingRight = velocity > 0;
