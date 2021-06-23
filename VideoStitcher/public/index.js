@@ -8,7 +8,7 @@ const socket = io();
 //                 const exitEvent = events[i];
 //                 data.push({
 //                         x: exitEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
-//                         y: exitEvent.events.map(event => event.position.x * 2 - 1),
+//                         y: exitEvent.events.map(event => event.position.y * 2 - 1),
 //                         type: 'scatter',
 //                         name: 'Exit event ' + exitEvent.id,
 //                 });
@@ -19,7 +19,7 @@ const socket = io();
 //                         const relatedEvent = exitEvent.relatedEvents[j];
 //                         data.push({
 //                                 x: relatedEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
-//                                 y: relatedEvent.events.map(event => event.position.x * 2 - 1),
+//                                 y: relatedEvent.events.map(event => event.position.y * 2 - 1),
 //                                 type: 'scatter',
 //                                 name: 'Related event ' + relatedEvent.id + ' for other enter event ' + exitEvent.id,
 //                         });
@@ -35,7 +35,7 @@ const socket = io();
 
 const parseFinalizedEvent = (index, eventData, startTime, x, y, event) => {
 	x.push(...event.data.map(event => (event.timestamp - startTime) / 1000));
-	y.push(...event.data.map(event => event.position.x * 2 - 1));
+	y.push(...event.data.map(event => event.position.y * 2 - 1));
 	event.data.forEach((e) => {
 		eventData.push(e);
 		index++;

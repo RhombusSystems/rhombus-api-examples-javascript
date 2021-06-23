@@ -45,6 +45,7 @@ export const DownloadFinalizedEventRecursive = async (config: Configuration, typ
 
 export const ClipCombinerPipeline = async (config: Configuration, type: ConnectionType, event: FinalizedEvent): Promise<void> => {
 	let dir = "res/" + event.startTime + "/";
+	console.log(dir);
 	if (fs.existsSync(dir)) return;
 	fs.mkdirSync(dir);
 

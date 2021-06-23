@@ -1,8 +1,11 @@
+import { GetVelocity } from "../utils/velocity";
 import { HumanEvent } from "./human_event"
+import { Vec2 } from "./vector";
 
 export interface EnterEvent {
 	events: HumanEvent[];
 	id: number;
+	velocity: Vec2;
 };
 
 export const EnterEventsFromMap = (events: Map<number, HumanEvent[]>): EnterEvent[] => {
@@ -11,6 +14,7 @@ export const EnterEventsFromMap = (events: Map<number, HumanEvent[]>): EnterEven
 		resultEvents.push({
 			events: es,
 			id: id,
+			velocity: GetVelocity(es[0], es[1]),
 		});
 	});
 	resultEvents.sort((a, b) => {
@@ -25,7 +29,9 @@ export interface ExitEvent {
 	events: HumanEvent[];
 	id: number;
 	relatedEvents: EnterEvent[];
+	velocity: Vec2;
 };
+
 export interface FinalizedEvent {
 	id: number;
 	followingEvent: FinalizedEvent | undefined;
@@ -42,6 +48,7 @@ export const ExitEventsFromMap = (events: Map<number, HumanEvent[]>): ExitEvent[
 			events: es,
 			id: id,
 			relatedEvents: [],
+			velocity: GetVelocity(es[es.length - 2], es[es.length - 1]),
 		});
 	});
 	resultEvents.sort((a, b) => {

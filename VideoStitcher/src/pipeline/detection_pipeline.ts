@@ -17,8 +17,8 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 	let events: ExitEvent[] = [];
 
 	for (const camera of cameras) {
-		const duration = 10 * 60;
-		const offset = 1 * 60;
+		const duration = 2 * 60;
+		const offset = 0 * 60;
 		const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
 		console.log("Current time " + currentTime);
 		console.log(camera);
@@ -26,12 +26,14 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 		// Unintentional but works really well (works) 1623884880
 		// Sick af because I also didn't even mean to do this (works) 1623945969
 		// Super basic example (works) 1623962260
-		// IT FUCKING WORKS (works) 1623963641
-		// Good simple one (works) 1623969300
+		// This one is somewhat broken, but I won't worry about it (broken) 1623963641
+		// Somewhat broken now, need to fix (broken) 1623969300
 		// Good one for testing (works) 1623970642
-		// Very complicated one and funny result (broken) 1624314992
-		// Works perfectly (works) 1624317870
+		// Still broken, but less so (broken) 1624314992
+		// Kinda works, but still quite buggy (broken) 1624317870
 		// Need to fix (broken) 1624398830
+		// Go beneath camera (in progress) 1624471346
+		// Basically works as expected (works) 1624488420
 		const res = CollateEvents(await GetHumanEvents(configuration, camera, currentTime, duration));
 
 		console.log(res.size + " human events found");
