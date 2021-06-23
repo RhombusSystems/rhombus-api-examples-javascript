@@ -48,17 +48,15 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	let msg: PlotGraphMessage = undefined;
 
-
 	setInterval(() => SendGraph(msg), 1000);
 
-	// setInterval(async () => {
 	res = await DetectionPipeline(configuration);
 	if (res.length > 0) {
 		const events = await RelatedEventsPipeline(configuration, res);
 		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
 		msg = relatedEventsRes.msg;
 		SendGraph(msg);
-		console.log(msg);
+		console.log(JSON.stringify(relatedEventsRes, null, 2));
 		if (relatedEventsRes.events.length > 0) {
 			for (const event of relatedEventsRes.events) {
 				if (event.followingEvent != undefined) {
@@ -67,7 +65,5 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 				}
 			}
 		}
-		// console.log(JSON.stringify(msg, null, 2));
 	}
-	// }, 3 * 60 * 1000);
 }
