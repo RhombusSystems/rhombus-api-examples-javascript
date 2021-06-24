@@ -2,12 +2,13 @@
   *
   * @import necessary services
   * */
-import { SendGraph, PlotGraphMessage } from "./services/graph_service"
+import { SendGraph, PlotGraphMessage, SendCameraPlot } from "./services/graph_service"
 
 import { DetectionPipeline } from "./pipeline/detection_pipeline"
 import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
 import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator_pipeline"
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
+import { ExitEvent } from "./types/events"
 
 /*
   *
@@ -35,8 +36,6 @@ import { GetCameraList } from "./services/camera_list"
 export const main = async (apiKey: string, type: ConnectionType) => {
 	IOServer.StartServer();
 
-
-
 	// Show a warning if running in WAN mode, because this is not recommended
 	if (type == ConnectionType.WAN) {
 		// Print in red
@@ -49,15 +48,19 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	const camList = await GetCameraList(configuration);
 	console.log(JSON.stringify(camList, null, 2));
 
-	let res = undefined;
+	let res: ExitEvent[] = [];
 
 	let msg: PlotGraphMessage = undefined;
 
-	setInterval(() => SendGraph(msg), 1000);
+	setInterval(() => {
+		SendGraph(msg);
+		if (res.length > 0)
+			SendCameraPlot(camList, res[0]);
+	}, 1000);
 
 	res = await DetectionPipeline(configuration);
 	if (res.length > 0) {
-		const events = await RelatedEventsPipeline(configuration, res);
+		const events = await RelatedEventsPipeline(configuration, res, camList);
 		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
 		msg = relatedEventsRes.msg;
 		SendGraph(msg);

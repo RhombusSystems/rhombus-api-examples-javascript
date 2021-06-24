@@ -1,29 +1,23 @@
 import { ExitEvent, EnterEventsFromMap } from "../types/events"
 import { Configuration } from "@rhombus/API"
-import { GetCameraList } from "../services/camera_list"
 import { GetHumanEvents } from "../services/human_events_service"
 import { DetectEdgeEvents, EdgeEventsType } from "../services/edge_event_detector"
 import { IsolateObjectIDEvents } from "../services/object_id_isolator"
 import { IsolateVelocities } from "../services/velocity_isolator"
 import { IsolateEventsFromLength } from "../services/event_length_isolator"
 import { CollateEvents } from "../services/event_collator"
+import { IsolateCameras } from "../services/camera_position_isolator"
 import { Camera } from "../types/camera"
 
 
-export const RelatedEventsPipeline = async (configuration: Configuration, exitEvents: ExitEvent[]): Promise<ExitEvent[]> => {
-	const cameraUUIDs = await GetCameraList(configuration);
-
+export const RelatedEventsPipeline = async (configuration: Configuration, exitEvents: ExitEvent[], cameras: Camera[]): Promise<ExitEvent[]> => {
 	for (let event of exitEvents) {
-		let cameras: Camera[] = [];
-		cameraUUIDs.forEach(camera => {
-			if (camera.uuid != event.events[0].camUUID)
-				cameras.push(camera);
-		})
+		let _cameras: Camera[] = IsolateCameras(cameras, event);
 		const events = event.events;
 		const startTime = Math.floor(events[events.length - 1].timestamp / 1000);
 		const detectionDuration = 30;
 
-		for (const otherCam of cameras) {
+		for (const otherCam of _cameras) {
 			const otherHumanEvents = IsolateEventsFromLength(await GetHumanEvents(configuration, otherCam.uuid, startTime, detectionDuration));
 			const collatedEvents = IsolateEventsFromLength(IsolateObjectIDEvents(CollateEvents(otherHumanEvents)));
 			const edgeEvents = IsolateEventsFromLength(DetectEdgeEvents(collatedEvents, EdgeEventsType.Begin));
@@ -33,12 +27,6 @@ export const RelatedEventsPipeline = async (configuration: Configuration, exitEv
 			event.relatedEvents = event.relatedEvents.concat(EnterEventsFromMap(velocityEvents));
 		}
 	}
-
-	// for (let i = exitEvents.length - 1; i >= 0; i--) {
-	//         const event = exitEvents[i];
-	//         if (event.relatedEvents.length == 0) exitEvents.splice(i, 1);
-	// }
-
 
 	return exitEvents;
 }

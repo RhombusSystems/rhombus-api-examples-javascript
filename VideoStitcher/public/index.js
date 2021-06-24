@@ -69,7 +69,35 @@ socket.on("Plot-Graph", (msg) => {
 		const timestamp = event.timestamp;
 		window.open("https://console.rhombussystems.com/devices/cameras/" + event.camUUID + "/?t=" + timestamp, "_blank");
 	})
-
-	// graphHumanEvents(msg.events);
 });
 
+const colors = ["#001aff", "#00ff44", "#FF00FF"];
+
+const GetCameraColor = (uuid) => {
+	if (uuid == "IdQWkWO4S56_BgTJCYzQdA") {
+		return "#001aff";
+	} else if (uuid == "SdFCcHcOTwa4HcSZ3CpsFQ") {
+		return "#00ff44";
+	} else {
+		console.log(uuid);
+		return "#FF00FF";
+	}
+}
+
+socket.on("Plot-Cameras", (msg) => {
+	console.log(msg);
+	Plotly.newPlot("camera_position", msg.cameras.map(camera => {
+		const col = GetCameraColor(camera.uuid);
+		return {
+			x: camera.x,
+			y: camera.y,
+			fill: 'toself',
+			fillcolor: col,
+			line: { color: col },
+			type: 'scatter',
+		};
+	}), {
+		xaxis: { range: [-10, 10] },
+		yaxis: { range: [-10, 10] },
+	});
+});

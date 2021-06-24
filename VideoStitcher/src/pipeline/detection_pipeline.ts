@@ -34,6 +34,9 @@ export const DetectionPipeline = async (configuration: Configuration): Promise<E
 		// Need to fix (broken) 1624398830
 		// Go beneath camera (in progress) 1624471346
 		// Basically works as expected (works) 1624488420
+		// Wow ok didn't even mean to do that (works) 1624553931
+		// Again didn't mean to lmfao (works) 1624562875
+		// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
 		const res = CollateEvents(await GetHumanEvents(configuration, camera.uuid, currentTime, duration));
 
 		console.log(res.size + " human events found");

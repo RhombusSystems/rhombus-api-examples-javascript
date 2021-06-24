@@ -1,4 +1,31 @@
 import { Vec2 } from "../types/vector";
+import { DegreesToRadians } from "./unit_circle"
+
+namespace WGSConstants {
+	export const EARTH_MAJOR_AXIS = 6378137.0;
+	export const EARTH_FIRST_ECCENTRICITY_SQUARED = 0.00669437999014;
+	export const EARTH_SPHERICAL_RADIUS = 6378137;
+}
+
+export const GeodeticToENUSimpleApproximation = (pos: Vec2, base: Vec2): Vec2 => {
+	/*
+	 * DG See
+	 * https://stackoverflow.com/questions/17402723/function-that-converts-
+	 * gps-coordinates-to-enu-coordinates Particularly the local, flat earth
+	 * approximation
+	 */
+	const radLat = DegreesToRadians(pos.x);
+	const radLon = DegreesToRadians(pos.y);
+	const radBaseLat = DegreesToRadians(base.x);
+	const radBaseLon = DegreesToRadians(base.y);
+	const distNorth = (WGSConstants.EARTH_MAJOR_AXIS * (1 - WGSConstants.EARTH_FIRST_ECCENTRICITY_SQUARED) / Math
+		.pow(1 - WGSConstants.EARTH_FIRST_ECCENTRICITY_SQUARED * Math.pow(Math.sin(radBaseLat), 2), 3.0 / 2))
+		* (radLat - radBaseLat);
+	const distEast = (WGSConstants.EARTH_MAJOR_AXIS
+		/ Math.sqrt(1 - WGSConstants.EARTH_FIRST_ECCENTRICITY_SQUARED * Math.pow(Math.sin(radBaseLat), 2)))
+		* Math.cos(radBaseLat) * (radLon - radBaseLon);
+	return { x: distEast, y: distNorth };
+}
 
 // export const LatitudeLongitudeToMeters = (latitude: Vec2, longitude: Vec2): Vec2 => {
 //     var R = 6378.137; // Radius of earth in KM

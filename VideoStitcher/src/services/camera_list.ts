@@ -2,6 +2,7 @@ import { RHOMBUS_HEADERS } from "../utils/headers"
 
 import { Configuration, CameraWebserviceApi } from "@rhombus/API"
 import { Camera } from "../types/camera";
+import { DegreesToRadians, ConvertRhombusAngle } from "../utils/unit_circle"
 
 
 export const GetCameraList = async (configuration: Configuration): Promise<Camera[]> => {
@@ -10,7 +11,8 @@ export const GetCameraList = async (configuration: Configuration): Promise<Camer
 	const res = await api.getMinimalCameraStateList({}, RHOMBUS_HEADERS);
 	return res.cameraStates.map(camera => <Camera>{
 		uuid: camera.uuid,
-    	rotationRadians: camera.directionRadians,
-    	location: {x: camera.latitude, y: camera.longitude},
+		rotationRadians: ConvertRhombusAngle(camera.directionRadians),
+		location: { x: camera.latitude, y: camera.longitude },
+		FOV: DegreesToRadians(112),
 	});
 }

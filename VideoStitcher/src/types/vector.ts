@@ -50,13 +50,13 @@ export const len = (a: Vec2): number => {
 export function compare(a: Vec2, b: number): number;
 export function compare(a: Vec2, b: Vec2): number;
 export function compare(a: Vec2, b: any): number {
-	if(b.x == undefined) {
-		if(len(a) > b) return -1;
-		if(len(a) < b) return 1;
+	if (b.x == undefined) {
+		if (len(a) > b) return -1;
+		if (len(a) < b) return 1;
 		return 0;
 	} else {
-		if(len(a) > len(b)) return -1;
-		if(len(a) < len(b)) return 1;
+		if (len(a) > len(b)) return -1;
+		if (len(a) < len(b)) return 1;
 		return 0;
 	}
 }
