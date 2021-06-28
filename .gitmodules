@@ -1,0 +1,6 @@
+[submodule "VideoStitcher/helper_image_processor/vendor/glfw"]
+	path = VideoStitcher/helper_image_processor/vendor/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "VideoStitcher/helper_image_processor/vendor/glm"]
+	path = VideoStitcher/helper_image_processor/vendor/glm
+	url = https://github.com/g-truc/glm.git
