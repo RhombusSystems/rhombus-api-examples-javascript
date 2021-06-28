@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g CMakeFiles/Rhombus.dir/src/main.cpp.o -o Rhombus  vendor/glfw/src/libglfw3.a -lpthread /usr/lib/librt.so -lm -ldl 
