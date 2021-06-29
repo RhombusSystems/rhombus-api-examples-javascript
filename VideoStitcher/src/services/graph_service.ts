@@ -7,7 +7,7 @@ import { GeodeticToENUSimpleApproximation } from "../utils/utils"
 import { Rotate, Apply } from "../types/matrix"
 import { NormalizeAngle } from "../utils/unit_circle"
 import { GetCanvasSize } from "../rasterization/canvas_size"
-import { RasterizeCameras, Screen } from "../rasterization/rasterizer"
+import { RasterizeCameras, RasterizeVelocity } from "../rasterization/rasterizer"
 
 export interface PlotGraphMessage {
 	event: FinalizedEvent;
@@ -88,8 +88,9 @@ export const SendCameraPlot = (cameras: Camera[], event: ExitEvent) => {
 		if (cam.uuid == event.events[0].camUUID) {
 			const plots = cameras.map(camera => GetCameraPlot(camera, cam));
 			const canvasSize = GetCanvasSize(cameras, cam);
-			const screen = RasterizeCameras(plots, 20, canvasSize.x);
-			IOServer.Emit("Plot-Cameras", { cameras: plots, screen: screen });
+			const screen = RasterizeCameras(plots.filter(camera => camera.uuid != cam.uuid), 1, canvasSize.x);
+			const netScreen = RasterizeVelocity(event, 300, screen);
+			IOServer.Emit("Plot-Cameras", { cameras: plots, screen: screen, netScreen: netScreen });
 		}
 	});
 }

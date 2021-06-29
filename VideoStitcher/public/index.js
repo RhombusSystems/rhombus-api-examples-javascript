@@ -102,6 +102,7 @@ socket.on("Plot-Cameras", (msg) => {
 	});
 
 	const pixels = msg.screen.pixels;
+	const netPixels = msg.netScreen.pixels;
 	const numRows = pixels.length;
 	const size = 1000 / numRows;
 	const canvas = document.getElementById("camera_visibility_rasterized");
@@ -110,7 +111,13 @@ socket.on("Plot-Cameras", (msg) => {
 	ctx.clearRect(0, 0, 1000, 1000);
 	for (let i = 0; i < numRows; i++) {
 		for (let j = 0; j < numRows; j++) {
-			ctx.fillStyle = pixels[j][i].cameras.length > 0 ? 'white' : 'black';
+			if (netPixels[j][i]) {
+				ctx.fillStyle = 'blue';
+			} else if (pixels[j][i].cameras.length > 0) {
+				ctx.fillStyle = 'white';
+			} else {
+				ctx.fillStyle = 'black';
+			}
 			ctx.fillRect(size * i, 1000 - size * j, size, size);
 			ctx.strokeStyle = 'white';
 			ctx.strokeRect(size * i, 1000 - size * j, size, size);
