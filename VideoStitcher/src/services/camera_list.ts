@@ -13,6 +13,7 @@ export const GetCameraList = async (configuration: Configuration): Promise<Camer
 		uuid: camera.uuid,
 		rotationRadians: ConvertRhombusAngle(camera.directionRadians),
 		location: { x: camera.latitude, y: camera.longitude },
-		FOV: DegreesToRadians(112),
+		FOV: DegreesToRadians(96),
+		viewDistance: 20.72,
 	});
 }

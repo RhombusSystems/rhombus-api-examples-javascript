@@ -5,4 +5,5 @@ export interface Camera {
 	rotationRadians: number;
 	location: Vec2;
 	FOV: number;
+	viewDistance: number;
 }

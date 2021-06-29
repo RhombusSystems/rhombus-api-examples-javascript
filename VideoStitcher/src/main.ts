@@ -54,9 +54,10 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	setInterval(() => {
 		SendGraph(msg);
-		if (res.length > 0)
+		if (res.length > 0) {
 			SendCameraPlot(camList, res[0]);
-	}, 1000);
+		}
+	}, 3000);
 
 	res = await DetectionPipeline(configuration);
 	if (res.length > 0) {

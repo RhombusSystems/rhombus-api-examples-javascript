@@ -56,19 +56,19 @@ socket.on("Plot-Graph", (msg) => {
 	console.log(x);
 	console.log(y);
 	console.log(eventData);
-	let graph = document.getElementById("graph");
-	Plotly.newPlot("graph", [{
-		x: x,
-		y: y,
-		type: 'scatter',
-	}]);
-	graph.on('plotly_click', (data) => {
-		const point = data.points[0];
-		console.log(point);
-		const event = eventData[point.pointNumber];
-		const timestamp = event.timestamp;
-		window.open("https://console.rhombussystems.com/devices/cameras/" + event.camUUID + "/?t=" + timestamp, "_blank");
-	})
+	// let graph = document.getElementById("graph");
+	// Plotly.newPlot("graph", [{
+	//         x: x,
+	//         y: y,
+	//         type: 'scatter',
+	// }]);
+	// graph.on('plotly_click', (data) => {
+	//         const point = data.points[0];
+	//         console.log(point);
+	//         const event = eventData[point.pointNumber];
+	//         const timestamp = event.timestamp;
+	//         window.open("https://console.rhombussystems.com/devices/cameras/" + event.camUUID + "/?t=" + timestamp, "_blank");
+	// })
 });
 
 const colors = ["#001aff", "#00ff44", "#FF00FF"];
@@ -97,7 +97,24 @@ socket.on("Plot-Cameras", (msg) => {
 			type: 'scatter',
 		};
 	}), {
-		xaxis: { range: [-10, 10] },
-		yaxis: { range: [-10, 10] },
+		xaxis: { range: [-50, 50] },
+		yaxis: { range: [-50, 50] },
 	});
+
+	const pixels = msg.screen.pixels;
+	const numRows = pixels.length;
+	const size = 1000 / numRows;
+	const canvas = document.getElementById("camera_visibility_rasterized");
+	const ctx = canvas.getContext('2d');
+
+	ctx.clearRect(0, 0, 1000, 1000);
+	for (let i = 0; i < numRows; i++) {
+		for (let j = 0; j < numRows; j++) {
+			ctx.fillStyle = pixels[j][i].cameras.length > 0 ? 'white' : 'black';
+			ctx.fillRect(size * i, 1000 - size * j, size, size);
+			ctx.strokeStyle = 'white';
+			ctx.strokeRect(size * i, 1000 - size * j, size, size);
+		}
+	}
 });
+
