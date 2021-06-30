@@ -157,6 +157,7 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	}, 3000);
 
 	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
+	// Walking between 3 cameras 158, 1625092837156, SdFCcHcOTwa4HcSZ3CpsFQ
 	res = await DetectionPipeline(configuration, selectedEvent.camUUID, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
 
 	if (res.length > 0) {
@@ -168,13 +169,14 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 		SendGraph(msg);
 
 		if (relatedEventsRes.events.length > 0) {
-			console.log("No related events found for this object!");
 
 			for (const event of relatedEventsRes.events) {
 				if (event.followingEvent != undefined) {
 					ClipCombinerPipeline(configuration, type, event);
 				}
 			}
+		} else {
+			console.log("No related events found for this object!");
 		}
 	} else {
 		console.log("Object not detected properly! Is this person leaving the screen?");
