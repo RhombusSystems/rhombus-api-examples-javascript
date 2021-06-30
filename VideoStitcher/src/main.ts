@@ -13,7 +13,8 @@ import { IsolateEventsFromLength } from "./services/event_length_isolator"
 import { CollateEvents } from "./services/event_collator"
 import { ExitEvent } from "./types/events"
 
-import { VideoWebserviceApi } from "@rhombus/API"
+import { CameraWebserviceApi } from "@rhombus/API"
+import { Camera } from "./types/camera"
 import { RHOMBUS_HEADERS } from "./utils/headers"
 
 /*
@@ -41,19 +42,26 @@ export interface RecentHumanEventInfo {
 	camUUID: string;
 };
 
-export const PrintRecentHumanEvents = async (configuration: Configuration, events: RecentHumanEventInfo[]): Promise<void> => {
-	let api: VideoWebserviceApi;
-	api = new VideoWebserviceApi(configuration);
+export const PrintRecentHumanEvents = async (configuration: Configuration, events: RecentHumanEventInfo[], cameras: Camera[]): Promise<void> => {
+	let api: CameraWebserviceApi;
+	api = new CameraWebserviceApi(configuration);
+
+	const baseFrameURIs: Map<string, string> = new Map();
+
+	for (const cam of cameras) {
+		const res = await api.getMediaUris({ cameraUuid: cam.uuid }, RHOMBUS_HEADERS);
+		const vodURI = res.wanVodMpdUriTemplate;
+		baseFrameURIs.set(cam.uuid, vodURI.substr(0, vodURI.indexOf("/dash")) + "/media/frame/");
+	}
+
 	let urls: string[] = [];
+	let i = 0;
+
 	for (const event of events) {
-		const res = await api.getExactFrameUri({
-			cameraUuid: event.camUUID,
-			timestampMs: event.timestamp,
-		},
-			RHOMBUS_HEADERS
-		);
-		urls.push("URL: " + res.frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camUUID);
+		const frameUri = baseFrameURIs.get(event.camUUID) + event.camUUID + "/" + event.timestamp + "/thumb.jpeg";
+		urls.push("(" + i + ") URL: " + frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camUUID);
 		urls.push("--------------------------------------");
+		i++;
 	}
 	console.log("Here are the recent human events in the last 10 minutes: ");
 	urls.forEach(url => console.log(url));
@@ -67,7 +75,6 @@ export const PrintRecentHumanEvents = async (configuration: Configuration, event
   *
   * */
 export const main = async (apiKey: string, type: ConnectionType) => {
-
 	// Show a warning if running in WAN mode, because this is not recommended
 	if (type == ConnectionType.WAN) {
 		// Print in red
@@ -80,9 +87,9 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	const camList = await GetCameraList(configuration);
 
 	let recent_human_events: RecentHumanEventInfo[] = [];
-	const duration = 2 * 60;
-	const offset = 0 * 60;
-	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
+
+	const duration = 10 * 60;
+	const currentTime = Math.round(new Date().getTime() / 1000) - duration;
 
 	for (const cam of camList) {
 		const human_events = await GetHumanEvents(configuration, cam.uuid, currentTime, duration)
@@ -96,31 +103,51 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 			});
 		});
 	}
-	await PrintRecentHumanEvents(configuration, recent_human_events);
-	const questions: prompts.PromptObject<string>[] = [
-		{
-			type: "number",
-			name: "objectID",
-			'message': "Object ID of the person you would like to follow",
-		},
-		{
-			type: "number",
-			name: "timestamp",
-			'message': "Timestamp at which to start looking for this person",
-		},
-		{
-			type: "text",
-			name: "cameraUUID",
-			'message': "The camera UUID in which this person appears first",
-		}
-	];
-	// const response = await prompts(questions);
+	await PrintRecentHumanEvents(configuration, recent_human_events, camList);
+
+
+	let selectedEvent: RecentHumanEventInfo;
+
+	const autoSelectResponse = recent_human_events.length == 0 ? { selection: -1 } : await prompts({
+		type: "number",
+		name: "selection",
+		message: "Please select a human event to follow. You can either use one of the events in the last 10 minutes OR you can type -1 to specify manually a custom objectID, timestamp, and camera.",
+	});
+
+	if (autoSelectResponse.selection == -1) {
+		const manualSelectQuestions: prompts.PromptObject<string>[] = [
+			{
+				type: "number",
+				name: "objectID",
+				message: "Object ID of the person you would like to follow",
+			},
+			{
+				type: "number",
+				name: "timestamp",
+				message: "Timestamp in miliseconds at which to start looking for this person",
+			},
+			{
+				type: "text",
+				name: "cameraUUID",
+				message: "The camera UUID in which this person appears first",
+			}
+		];
+		const response = await prompts(manualSelectQuestions);
+		selectedEvent = {
+			objectID: response.objectID,
+			camUUID: response.cameraUUID,
+			timestamp: response.timestamp
+		};
+	} else {
+		selectedEvent = recent_human_events[autoSelectResponse.selection];
+	}
+
 
 	IOServer.StartServer();
 
 	let res: ExitEvent[] = [];
 
-	let msg: PlotGraphMessage = undefined;;
+	let msg: PlotGraphMessage = undefined;
 
 	setInterval(() => {
 		SendGraph(msg);
@@ -129,19 +156,27 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 		}
 	}, 3000);
 
-	res = await DetectionPipeline(configuration, "SdFCcHcOTwa4HcSZ3CpsFQ", 86, Math.floor(1625085357148 / 1000));
+	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
+	res = await DetectionPipeline(configuration, selectedEvent.camUUID, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
+
 	if (res.length > 0) {
 		const events = await RelatedEventsPipeline(configuration, res, camList);
+
 		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
 		msg = relatedEventsRes.msg;
+
 		SendGraph(msg);
+
 		if (relatedEventsRes.events.length > 0) {
+			console.log("No related events found for this object!");
+
 			for (const event of relatedEventsRes.events) {
 				if (event.followingEvent != undefined) {
-					console.log("Combining clips");
 					ClipCombinerPipeline(configuration, type, event);
 				}
 			}
 		}
+	} else {
+		console.log("Object not detected properly! Is this person leaving the screen?");
 	}
 }

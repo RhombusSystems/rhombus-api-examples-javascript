@@ -20,6 +20,7 @@ export const DetectionPipeline = async (configuration: Configuration, camUUID: s
 	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
 	console.log("Current time " + currentTime);
 	console.log(camUUID);
+	console.log(objectID)
 
 	// Unintentional but works really well (works) 1623884880
 	// Sick af because I also didn't even mean to do this (works) 1623945969
