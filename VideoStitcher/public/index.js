@@ -1,37 +1,37 @@
 const socket = io();
 
-// const graphHumanEvents = (events) => {
-//         let data = [];
-//         let curveData = [];
-//         let k = 0;
-//         for (let i = 0; i < events.length; i++) {
-//                 const exitEvent = events[i];
-//                 data.push({
-//                         x: exitEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
-//                         y: exitEvent.events.map(event => event.position.y * 2 - 1),
-//                         type: 'scatter',
-//                         name: 'Exit event ' + exitEvent.id,
-//                 });
-//                 curveData.push({
-//                         event: exitEvent,
-//                 });
-//                 for (let j = 0; j < exitEvent.relatedEvents.length; j++) {
-//                         const relatedEvent = exitEvent.relatedEvents[j];
-//                         data.push({
-//                                 x: relatedEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
-//                                 y: relatedEvent.events.map(event => event.position.y * 2 - 1),
-//                                 type: 'scatter',
-//                                 name: 'Related event ' + relatedEvent.id + ' for other enter event ' + exitEvent.id,
-//                         });
-//                         curveData.push({
-//                                 event: relatedEvent,
-//                         });
-//                         k++;
-//                 }
+const graphHumanEvents = (events) => {
+	let data = [];
+	let curveData = [];
+	let k = 0;
+	for (let i = 0; i < events.length; i++) {
+		const exitEvent = events[i];
+		data.push({
+			x: exitEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
+			y: exitEvent.events.map(event => event.position.y * 2 - 1),
+			type: 'scatter',
+			name: 'Exit event ' + exitEvent.id,
+		});
+		curveData.push({
+			event: exitEvent,
+		});
+		for (let j = 0; j < exitEvent.relatedEvents.length; j++) {
+			const relatedEvent = exitEvent.relatedEvents[j];
+			data.push({
+				x: relatedEvent.events.map(event => (event.timestamp - events[0].events[0].timestamp) / 1000),
+				y: relatedEvent.events.map(event => event.position.y * 2 - 1),
+				type: 'scatter',
+				name: 'Related event ' + relatedEvent.id + ' for other enter event ' + exitEvent.id,
+			});
+			curveData.push({
+				event: relatedEvent,
+			});
+			k++;
+		}
 
-//         }
-//         console.log(data);
-// }
+	}
+	console.log(data);
+}
 
 const parseFinalizedEvent = (index, eventData, startTime, x, y, event) => {
 	x.push(...event.data.map(event => (event.timestamp - startTime) / 1000));
@@ -56,19 +56,19 @@ socket.on("Plot-Graph", (msg) => {
 	console.log(x);
 	console.log(y);
 	console.log(eventData);
-	// let graph = document.getElementById("graph");
-	// Plotly.newPlot("graph", [{
-	//         x: x,
-	//         y: y,
-	//         type: 'scatter',
-	// }]);
-	// graph.on('plotly_click', (data) => {
-	//         const point = data.points[0];
-	//         console.log(point);
-	//         const event = eventData[point.pointNumber];
-	//         const timestamp = event.timestamp;
-	//         window.open("https://console.rhombussystems.com/devices/cameras/" + event.camUUID + "/?t=" + timestamp, "_blank");
-	// })
+	let graph = document.getElementById("graph");
+	Plotly.newPlot("graph", [{
+		x: x,
+		y: y,
+		type: 'scatter',
+	}]);
+	graph.on('plotly_click', (data) => {
+		const point = data.points[0];
+		console.log(point);
+		const event = eventData[point.pointNumber];
+		const timestamp = event.timestamp;
+		window.open("https://console.rhombussystems.com/devices/cameras/" + event.camUUID + "/?t=" + timestamp, "_blank");
+	})
 });
 
 const colors = ["#001aff", "#00ff44", "#FF00FF"];
@@ -102,7 +102,7 @@ socket.on("Plot-Cameras", (msg) => {
 	});
 
 	const pixels = msg.screen.pixels;
-	const netPixels = msg.netScreen.pixels;
+	const netPixels = msg.netScreen.netScreen.pixels;
 	const numRows = pixels.length;
 	const size = 1000 / numRows;
 	const canvas = document.getElementById("camera_visibility_rasterized");

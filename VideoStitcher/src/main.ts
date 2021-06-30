@@ -8,7 +8,13 @@ import { DetectionPipeline } from "./pipeline/detection_pipeline"
 import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
 import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator_pipeline"
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
+import { GetHumanEvents } from "./services/human_events_service"
+import { IsolateEventsFromLength } from "./services/event_length_isolator"
+import { CollateEvents } from "./services/event_collator"
 import { ExitEvent } from "./types/events"
+
+import { VideoWebserviceApi } from "@rhombus/API"
+import { RHOMBUS_HEADERS } from "./utils/headers"
 
 /*
   *
@@ -27,6 +33,33 @@ import { IOServer } from "./server/server"
 import { GetCameraList } from "./services/camera_list"
 
 
+import * as prompts from "prompts"
+
+export interface RecentHumanEventInfo {
+	timestamp: number;
+	objectID: number;
+	camUUID: string;
+};
+
+export const PrintRecentHumanEvents = async (configuration: Configuration, events: RecentHumanEventInfo[]): Promise<void> => {
+	let api: VideoWebserviceApi;
+	api = new VideoWebserviceApi(configuration);
+	let urls: string[] = [];
+	for (const event of events) {
+		const res = await api.getExactFrameUri({
+			cameraUuid: event.camUUID,
+			timestampMs: event.timestamp,
+		},
+			RHOMBUS_HEADERS
+		);
+		urls.push("URL: " + res.frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camUUID);
+		urls.push("--------------------------------------");
+	}
+	console.log("Here are the recent human events in the last 10 minutes: ");
+	urls.forEach(url => console.log(url));
+}
+
+
 /*
   *
   * Entry point 
@@ -34,7 +67,6 @@ import { GetCameraList } from "./services/camera_list"
   *
   * */
 export const main = async (apiKey: string, type: ConnectionType) => {
-	IOServer.StartServer();
 
 	// Show a warning if running in WAN mode, because this is not recommended
 	if (type == ConnectionType.WAN) {
@@ -46,11 +78,49 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	const configuration = new Configuration({ apiKey: apiKey });
 
 	const camList = await GetCameraList(configuration);
-	console.log(JSON.stringify(camList, null, 2));
+
+	let recent_human_events: RecentHumanEventInfo[] = [];
+	const duration = 2 * 60;
+	const offset = 0 * 60;
+	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
+
+	for (const cam of camList) {
+		const human_events = await GetHumanEvents(configuration, cam.uuid, currentTime, duration)
+		const isolated_events = IsolateEventsFromLength(CollateEvents(human_events));
+		isolated_events.forEach((es) => {
+			const event = es[0];
+			recent_human_events.push({
+				timestamp: event.timestamp,
+				objectID: event.id,
+				camUUID: event.camUUID,
+			});
+		});
+	}
+	await PrintRecentHumanEvents(configuration, recent_human_events);
+	const questions: prompts.PromptObject<string>[] = [
+		{
+			type: "number",
+			name: "objectID",
+			'message': "Object ID of the person you would like to follow",
+		},
+		{
+			type: "number",
+			name: "timestamp",
+			'message': "Timestamp at which to start looking for this person",
+		},
+		{
+			type: "text",
+			name: "cameraUUID",
+			'message': "The camera UUID in which this person appears first",
+		}
+	];
+	// const response = await prompts(questions);
+
+	IOServer.StartServer();
 
 	let res: ExitEvent[] = [];
 
-	let msg: PlotGraphMessage = undefined;
+	let msg: PlotGraphMessage = undefined;;
 
 	setInterval(() => {
 		SendGraph(msg);
@@ -59,13 +129,12 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 		}
 	}, 3000);
 
-	res = await DetectionPipeline(configuration);
+	res = await DetectionPipeline(configuration, "SdFCcHcOTwa4HcSZ3CpsFQ", 86, Math.floor(1625085357148 / 1000));
 	if (res.length > 0) {
 		const events = await RelatedEventsPipeline(configuration, res, camList);
 		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
 		msg = relatedEventsRes.msg;
 		SendGraph(msg);
-		console.log(JSON.stringify(relatedEventsRes, null, 2));
 		if (relatedEventsRes.events.length > 0) {
 			for (const event of relatedEventsRes.events) {
 				if (event.followingEvent != undefined) {

@@ -18,7 +18,6 @@ export const CollateEvents = (events: Map<number, HumanEvent[]>): Map<number, Hu
 						const tSimilar = Math.abs(currentEvent.timestamp - otherEvent.timestamp) < 500;
 						if (wSimilar && hSimilar && tSimilar && vSimilar) {
 							console.log("Combining " + currentID + " with " + otherID);
-							otherEvents.forEach(e => e.id = currentEvent.id);
 							currentEvents = currentEvents.concat(otherEvents);
 							events.set(currentID, currentEvents);
 							events.delete(otherID);

@@ -98,19 +98,19 @@ export const RotateCaptureNetFromVelocity = (captureNet: CaptureNetTrapezoid, ve
 	} else if (velocity.x == 1 && velocity.y == 0) {
 		return captureNet;
 	} else if (velocity.x == 1 && velocity.y == 1) {
-		rotation = Math.PI / 4;
-	} else if (velocity.x == 1 && velocity.y == -1) {
 		rotation = -Math.PI / 4;
+	} else if (velocity.x == 1 && velocity.y == -1) {
+		rotation = Math.PI / 4;
 	} else if (velocity.x == -1 && velocity.y == 0) {
 		rotation = Math.PI;
 	} else if (velocity.x == -1 && velocity.y == 1) {
-		rotation = 3 * Math.PI / 4;
+		rotation = -3 * Math.PI / 4;
 	} else if (velocity.x == -1 && velocity.y == -1) {
-		rotation = 5 * Math.PI / 4;
+		rotation = -5 * Math.PI / 4;
 	} else if (velocity.x == 0 && velocity.y == 1) {
-		rotation = Math.PI / 2;
-	} else if (velocity.x == 0 && velocity.y == -1) {
 		rotation = -Math.PI / 2;
+	} else if (velocity.x == 0 && velocity.y == -1) {
+		rotation = Math.PI / 2;
 	} else {
 		throw ("brandon is a moron");
 	}
