@@ -53,7 +53,6 @@ export const RelatedEventsIsolatorPipeline = (exitEvents: ExitEvent[]): FinalEve
 	return {
 		msg: {
 			event: res[0],
-			id: new Date().getTime(),
 		},
 		events: res,
 	};

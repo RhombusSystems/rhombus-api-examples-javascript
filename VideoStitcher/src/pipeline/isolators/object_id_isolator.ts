@@ -1,8 +1,8 @@
 import { HumanEvent } from "../../types/human_event"
-import { ObjectIDMaxLengthSeconds } from '../../environment/environment'
+import { Environment } from '../../environment/environment'
 
 export const IsolateHumanEventsFromObjectID = (es: HumanEvent[], startFromBeginning: boolean = false): HumanEvent[] => {
-	const cutoffMiliseconds = ObjectIDMaxLengthSeconds;
+	const cutoffMiliseconds = Environment.ObjectIDMaxLengthSeconds;
 	if (startFromBeginning) {
 		for (let i = 0; i < es.length - 2; i++) {
 			const event = es[i];
