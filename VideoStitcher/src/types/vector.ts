@@ -115,7 +115,7 @@ export function compare(a: Vec2, b: any): number {
 		if (len(a) < b) return 1;
 		return 0;
 
-	// b is a vector
+		// b is a vector
 	} else {
 		if (len(a) > len(b)) return -1;
 		if (len(a) < len(b)) return 1;

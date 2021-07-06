@@ -203,5 +203,6 @@ export const IsolateVelocities = (events: Map<number, HumanEvent[]>, type: EdgeE
 		}
 	});
 
+	// Return the events that made it
 	return events;
 }
