@@ -1,5 +1,5 @@
 import { PlotGraphMessage } from "../services/graph_service"
-import { EnterEvent, ExitEvent, FinalizedEvent, ExitEventIsRelated, EventsAreTheSame } from "../types/events"
+import { EnterEvent, ExitEvent, FinalizedEvent, EventsAreTheSame } from "../types/events"
 import { CanCollateEvents, DoCollateEnterAndExit } from "./services/event_collator"
 import { IsolateHumanEventsFromObjectID } from "./isolators/object_id_isolator"
 

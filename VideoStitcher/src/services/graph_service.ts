@@ -27,18 +27,6 @@ export interface PlotCamerasMessage {
 };
 
 
-export const SortEvents = (a: EnterEvent, b: EnterEvent) => {
-	if (a.events[0].timestamp < b.events[0].timestamp) return -1;
-	if (a.events[0].timestamp > b.events[0].timestamp) return 1;
-	return 0;
-}
-
-
-export const SortHumanEventsByTime = (a: HumanEvent, b: HumanEvent) => {
-	if (a.timestamp < b.timestamp) return -1;
-	if (a.timestamp > b.timestamp) return 1;
-	return 0;
-}
 
 
 export const SendGraph = (msg: PlotGraphMessage) => {

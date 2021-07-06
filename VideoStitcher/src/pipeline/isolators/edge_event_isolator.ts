@@ -5,7 +5,7 @@ export enum EdgeEventsType {
 	End,
 };
 
-export const DetectEdgeEvents = (allEvents: Map<number, HumanEvent[]>, type: EdgeEventsType): Map<number, HumanEvent[]> => {
+export const IsolateEdgeEvents = (allEvents: Map<number, HumanEvent[]>, type: EdgeEventsType): Map<number, HumanEvent[]> => {
 	let edgeEvents: Map<number, HumanEvent[]> = new Map();
 
 	allEvents.forEach((events) => {

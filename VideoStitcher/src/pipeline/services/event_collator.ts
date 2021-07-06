@@ -1,10 +1,11 @@
 import { HumanEvent } from "../../types/human_event"
-import { SortHumanEventsByTime } from "../../services/graph_service"
+import { CompareHumanEventsByTime } from "../../types/events"
 import { EnterEvent, ExitEvent } from "../../types/events"
 import { GetVelocity } from "../../utils/velocity"
 import { abs, compare, subtract } from "../../types/vector"
 
 export const CollateHumanEvents = (events: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
+	// Yes there are 4 nested loops, no I couldn't think of a better way of doing this, yes there probably is a better way of doing this, no I don't regret my actions 
 	for (let [currentID, currentEvents] of events) {
 		for (let i = currentEvents.length - 1; i >= 0; i--) {
 			for (let [otherID, otherEvents] of events) {
@@ -30,7 +31,7 @@ export const CollateHumanEvents = (events: Map<number, HumanEvent[]>): Map<numbe
 		}
 	}
 	for (let [_, es] of events) {
-		es.sort(SortHumanEventsByTime);
+		es.sort(CompareHumanEventsByTime);
 	}
 
 	return events;
@@ -49,7 +50,7 @@ export const CanCollateEvents = (a: EnterEvent, b: EnterEvent): boolean => {
 
 	const vAAndBSimilar = compare(subtract(aVelocity, bVelocity), 0.1) == 1;
 	const vBetweenAndASimilar = compare(subtract(velocityBetween, aVelocity), 0.1) == 1;
-	const vBetweenAndBSimilar = compare(subtract(velocityBetween, bVelocity),  0.1) == 1;
+	const vBetweenAndBSimilar = compare(subtract(velocityBetween, bVelocity), 0.1) == 1;
 	if (vAAndBSimilar && vBetweenAndASimilar && vBetweenAndBSimilar) {
 		return true;
 	} else {
@@ -59,7 +60,7 @@ export const CanCollateEvents = (a: EnterEvent, b: EnterEvent): boolean => {
 
 export const DoCollateEnterAndExit = (a: EnterEvent, b: ExitEvent): ExitEvent => {
 	return {
-		events: a.events.concat(b.events).sort(SortHumanEventsByTime),
+		events: a.events.concat(b.events).sort(CompareHumanEventsByTime),
 		id: b.id,
 		relatedEvents: b.relatedEvents,
 		velocity: b.velocity,

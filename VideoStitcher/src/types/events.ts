@@ -125,51 +125,140 @@ export interface FinalizedEvent {
 
 };
 
+/*
+  *
+  * @export
+  * @method Compares 2 human events based on their timestamps
+  *
+  * @param {HumanEvent} [a] The first human event
+  * @param {HumanEvent} [b] The second human event
+  *
+  * @return {number} Returns -1 if `a` is before `b`, 1 if `b` is before `a`, and 0 if `a` and `b` occur at the same time
+  * */
+export const CompareHumanEventsByTime = (a: HumanEvent, b: HumanEvent): number => {
+	if (a.timestamp < b.timestamp) return -1;
+	if (a.timestamp > b.timestamp) return 1;
+	return 0;
+}
+
+/*
+  *
+  * @export
+  * @method Compares 2 Enter events based on the timestamp of the first human event
+  *
+  * @param {EnterEvent} [a] The first enter event
+  * @param {EnterEvent} [b] The second enter event
+  *
+  * @return {number} Returns -1 if `a` is before `b`, 1 if `b` is before `a`, and 0 if `a` and `b` occur at the same time
+  * */
+export const CompareEvents = (a: EnterEvent, b: EnterEvent): number => {
+	return CompareHumanEventsByTime(a.events[0], b.events[0]);
+}
+
+/*
+  *
+  * @export
+  * @method Gets a list of enter events from a map of raw human events
+  *
+  * @param {Map<number, HumanEvent[]>} [events] The map of objectID to raw human event array
+  *
+  * @return {EnterEvent[]} Returns the list of EnterEvents that correspond to the map of human events
+  * */
 export const EnterEventsFromMap = (events: Map<number, HumanEvent[]>): EnterEvent[] => {
+	// Create our array of resulting events
 	let resultEvents: EnterEvent[] = [];
+
+	// Loop through all of the events
 	events.forEach((es, id) => {
+		// Push an EnterEvent for each of our resulting events
 		resultEvents.push({
-			events: es,
+			// The ID will be our key in our map
 			id: id,
+			// The events will be the value in our map
+			events: es,
+			// The velocity will just be the velocity between the first event and the second, since this is an enter event and that's the only velocity we really care about
 			velocity: GetVelocity(es[0], es[1]),
 		});
 	});
-	resultEvents.sort((a, b) => {
-		if (a.events[0].timestamp < b.events[0].timestamp) return -1;
-		if (a.events[0].timestamp > b.events[0].timestamp) return 1;
-		return 0;
-	});
+
+	// Sort the resulting events based on their timestamp
+	resultEvents.sort(CompareEvents);
+
+	// Return the resulting enter events
 	return resultEvents;
 }
 
+/*
+  *
+  * @export
+  * @method Gets a list of exit events from a map of raw human events
+  *
+  * @param {Map<number, HumanEvent[]>} [events] The map of objectID to raw human event array
+  *
+  * @return {EnterEvent[]} Returns the list of ExitEvents that correspond to the map of human events
+  * */
 export const ExitEventsFromMap = (events: Map<number, HumanEvent[]>): ExitEvent[] => {
+	// Create our array of resulting events
 	let resultEvents: ExitEvent[] = [];
+
+	// Loop through all of the events
 	events.forEach((es, id) => {
+		// Push an ExitEvent for each of our resulting events
 		resultEvents.push({
-			events: es,
+			// The ID will be our key in our map
 			id: id,
-			relatedEvents: [],
+			// The events will be the value in our map
+			events: es,
+			// The velocity will just be the velocity between the first event and the second, since this is an enter event and that's the only velocity we really care about
 			velocity: GetVelocity(es[es.length - 2], es[es.length - 1]),
+			// The related events will be empty because we don't have that information, this will be updated later in the program
+			relatedEvents: [],
 		});
 	});
-	resultEvents.sort((a, b) => {
-		if (a.events[0].timestamp < b.events[0].timestamp) return -1;
-		if (a.events[0].timestamp > b.events[0].timestamp) return 1;
-		return 0;
-	});
+	// Sort the resulting events based on their timestamp
+	resultEvents.sort(CompareEvents);
+
+	// Return the resulting exit events
 	return resultEvents;
 }
 
-export const EventsAreTheSame = (a: EnterEvent, b: EnterEvent) => {
+/*
+  *
+  * @export
+  * @method Determines if two enter or exit events are the same, based on the timestamp, camera UUID, the dimensions of the box, and the position.
+  * NOTE: We don't compare the object ID because this value is not very accurate.
+  *
+  * @param {EnterEvent} [a] The first enter event
+  * @param {EnterEvent} [b] The second enter event
+  *
+  * @return {boolean} Returns the true if both of the events are the same
+  * */
+export const EventsAreTheSame = (a: EnterEvent, b: EnterEvent): boolean => {
 	const aFirst = a.events[0];
 	const bFirst = b.events[0];
-	if (aFirst.timestamp == bFirst.timestamp && aFirst.camera.uuid == bFirst.camera.uuid && aFirst.dimensions == bFirst.dimensions && aFirst.position == bFirst.dimensions) return true;
-	return false;
+
+	return aFirst.timestamp == bFirst.timestamp && aFirst.camera.uuid == bFirst.camera.uuid && aFirst.dimensions == bFirst.dimensions && aFirst.position == bFirst.position;
 }
 
+/*
+  *
+  * @export
+  * @method Determines if two exit events are somehow related, in that the related event of one is the same as the our own one. This is used for chaining exit events together.
+  * For example if one exit event has a related event that matches another exit event, then we will assume that the first exit event has a related event which is our second exit event,
+  * thus chaining exit event 2 to exit event 1
+  *
+  * @param {ExitEvent} [event] An exit event
+  * @param {ExitEvent} [previousEvent] The exit event that occurs before `event`
+  *
+  * @return {boolean} Returns true if `event` can be changed to `previousEvent`
+  * */
 export const ExitEventIsRelated = (event: ExitEvent, previousEvent: ExitEvent): boolean => {
+	// Loop through all of the related events of `previousEvent`
 	for (const relatedEvent of previousEvent.relatedEvents) {
+		// If the exit events are the same, then we will return true because `event` can be chained to `previousEvent`
 		if (EventsAreTheSame(relatedEvent, event)) return true;
 	}
+
+	// If none of the related events of `previousEvent` match `event`, then `event` cannot be chained to `previousEvent`
 	return false;
 }

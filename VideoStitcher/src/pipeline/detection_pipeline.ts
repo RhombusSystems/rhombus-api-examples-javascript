@@ -3,14 +3,12 @@ import { ExitEvent, ExitEventsFromMap } from "../types/events"
 import { Configuration } from "@rhombus/API"
 
 import { GetHumanEvents } from "../services/human_events_service"
-import { DetectEdgeEvents, EdgeEventsType } from "./services/edge_event_detector"
-import { IsolateEventsFromObjectID } from "./isolators/object_id_isolator"
+import { IsolateEdgeEvents, EdgeEventsType } from "./isolators/edge_event_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
 import { CollateHumanEvents } from "./services/event_collator"
-import { GetCameraList } from "../services/camera_list"
-import { SortEvents } from "../services/graph_service"
 import { Camera } from "../types/camera"
+import { CompareEvents } from "../types/events"
 
 export const DetectionPipeline = async (configuration: Configuration, camera: Camera, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
 	let events: ExitEvent[] = [];
@@ -46,7 +44,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 
 	console.log(isolatedEvents.size + " were found from length and object IDs");
 
-	const edgeEvents = IsolateEventsFromLength(DetectEdgeEvents(isolatedEvents, EdgeEventsType.End));
+	const edgeEvents = IsolateEventsFromLength(IsolateEdgeEvents(isolatedEvents, EdgeEventsType.End));
 
 	console.log(edgeEvents.size + " were found from being close to the edge");
 
@@ -66,7 +64,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	events = events.concat(exitEventArray);
 
 
-	events.sort(SortEvents);
-	events.forEach(e => e.relatedEvents.sort(SortEvents));
+	events.sort(CompareEvents);
+	events.forEach(e => e.relatedEvents.sort(CompareEvents));
 	return events;
 }

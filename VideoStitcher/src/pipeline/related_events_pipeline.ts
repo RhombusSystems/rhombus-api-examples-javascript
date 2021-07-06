@@ -1,12 +1,11 @@
 import { ExitEvent, EnterEventsFromMap } from "../types/events"
 import { Configuration } from "@rhombus/API"
 import { GetHumanEvents } from "../services/human_events_service"
-import { DetectEdgeEvents, EdgeEventsType } from "./services/edge_event_detector"
+import { IsolateEdgeEvents, EdgeEventsType } from "./isolators/edge_event_isolator"
 import { IsolateEventsFromObjectID } from "./isolators/object_id_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
 import { CollateHumanEvents } from "./services/event_collator"
-// import { IsolateCameras } from "../services/camera_position_isolator"
 import { GetValidCameras } from "../rasterization/rasterizer"
 import { Camera } from "../types/camera"
 
@@ -23,7 +22,7 @@ export const RelatedEventsPipeline = async (configuration: Configuration, exitEv
 		for (const otherCam of _cameras) {
 			const otherHumanEvents = IsolateEventsFromLength(await GetHumanEvents(configuration, otherCam, startTime, detectionDuration));
 			const collatedEvents = IsolateEventsFromLength(IsolateEventsFromObjectID(CollateHumanEvents(otherHumanEvents)));
-			const edgeEvents = IsolateEventsFromLength(DetectEdgeEvents(collatedEvents, EdgeEventsType.Begin));
+			const edgeEvents = IsolateEventsFromLength(IsolateEdgeEvents(collatedEvents, EdgeEventsType.Begin));
 			const velocityEvents = IsolateVelocities(edgeEvents, EdgeEventsType.Begin);
 			console.log("other events " + otherCam.uuid + ", " + velocityEvents.size);
 
