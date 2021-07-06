@@ -10,15 +10,25 @@ import { CollateHumanEvents } from "./services/event_collator"
 import { Camera } from "../types/camera"
 import { CompareEvents } from "../types/events"
 
+/*
+  *
+  * @export
+  * @method Parses through human events to find exit events
+  *
+  * @param {Configuration} [configuration] The API configuration to use when making API requests
+  * @param {Camera} [camera] The camera to look for human events
+  * @param {number} [objectID] The object ID to look for
+  * @param {number} [timestamp] The timestamp at which to look for human events
+  *
+  * @return {Promise<ExitEvent[]>} Returns an array of exit events that match the object ID
+  * */
 export const DetectionPipeline = async (configuration: Configuration, camera: Camera, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
-	let events: ExitEvent[] = [];
 
+	// TODO: Make this not hardcoded
+	// Get the duration of time in seconds to look for human events. This is by default 10 minutes.
 	const duration = 10 * 60;
+	// A small offset in seconds is good so that we don't accidentally barely miss the object ID. This is by default 30 seconds
 	const offset = 0.5 * 60;
-	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
-	console.log("Current time " + currentTime);
-	console.log(camera.uuid);
-	console.log(objectID)
 
 	// Unintentional but works really well (works) 1623884880
 	// Sick af because I also didn't even mean to do this (works) 1623945969
@@ -33,37 +43,48 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	// Basically works as expected (works) 1624488420
 	// Wow ok didn't even mean to do that (works) 1624553931
 	// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
+
+	// Get an array of human events within the timeframe
 	const human_events = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
 
+	// Collate the HumanEvents so that we can get an accurate picture of how many different objectIDs were found
 	const res = CollateHumanEvents(human_events);
 
-	console.log(res.size + " human events found");
+	console.log(res.size + " humans found");
 
+	// Isolate the human events by length
 	const isolatedEvents = IsolateEventsFromLength(res);
 
 	console.log(isolatedEvents.size + " were found from length and object IDs");
 
+	// Isolate the human events by edge and then by length 
 	const edgeEvents = IsolateEventsFromLength(IsolateEdgeEvents(isolatedEvents));
 
 	console.log(edgeEvents.size + " were found from being close to the edge");
 
+	// Isolate the human events by velocity
 	const exitEvents = IsolateVelocities(edgeEvents, EdgeEventsType.End);
 
 	console.log(exitEvents.size + " were found from velocity");
 
-	const exitEventArray = ExitEventsFromMap(exitEvents);
+	// Convert our raw map of objectID to HumanEvent[] to an array of ExitEvents
+	const events = ExitEventsFromMap(exitEvents);
 
-	exitEventArray.filter((event) => {
+	// Only include exit events that actually contain our object ID
+	events.filter(event => {
+		// Loop through all of the events attached to this exit event, and return true if at least one matches our object ID
 		for (const humanEvent of event.events) {
 			if (humanEvent.id == objectID) return true;
 		}
+
+		// If none were found with our objectID, then return false and this ExitEvent will not be included
 		return false;
 	});
 
-	events = events.concat(exitEventArray);
-
-
+	// Sort all of the events by time
 	events.sort(CompareEvents);
+
+	// Sort all of the related events also
 	events.forEach(e => e.relatedEvents.sort(CompareEvents));
 	return events;
 }
