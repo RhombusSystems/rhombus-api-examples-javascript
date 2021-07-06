@@ -1,9 +1,9 @@
-import { ExitEvent, ExitEventsFromMap } from "../types/events"
+import { ExitEvent, EdgeEventsType, ExitEventsFromMap } from "../types/events"
 
 import { Configuration } from "@rhombus/API"
 
 import { GetHumanEvents } from "../services/human_events_service"
-import { IsolateEdgeEvents, EdgeEventsType } from "./isolators/edge_event_isolator"
+import { IsolateEdgeEvents } from "./isolators/edge_event_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
 import { CollateHumanEvents } from "./services/event_collator"
@@ -13,7 +13,6 @@ import { CompareEvents } from "../types/events"
 export const DetectionPipeline = async (configuration: Configuration, camera: Camera, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
 	let events: ExitEvent[] = [];
 
-	// for (const camera of cameras) {
 	const duration = 10 * 60;
 	const offset = 0.5 * 60;
 	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
@@ -44,7 +43,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 
 	console.log(isolatedEvents.size + " were found from length and object IDs");
 
-	const edgeEvents = IsolateEventsFromLength(IsolateEdgeEvents(isolatedEvents, EdgeEventsType.End));
+	const edgeEvents = IsolateEventsFromLength(IsolateEdgeEvents(isolatedEvents));
 
 	console.log(edgeEvents.size + " were found from being close to the edge");
 

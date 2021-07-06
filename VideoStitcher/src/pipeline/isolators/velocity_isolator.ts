@@ -1,6 +1,6 @@
 import { HumanEvent } from "../../types/human_event"
 
-import { EdgeEventsType } from "./edge_event_isolator"
+import { EdgeEventsType } from "../../types/events"
 
 import { NormalizeVelocity, NormalizePosition, GetVelocity } from "../../utils/velocity"
 import { abs, compare, Vec2 } from "../../types/vector";

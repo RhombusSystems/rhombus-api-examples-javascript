@@ -5,6 +5,16 @@ import { Vec2 } from "./vector";
 /*
   *
   * @export
+  * @enum Enum to specify whether an edge event occurs at the beginning or the end
+  * */
+export enum EdgeEventsType {
+	Begin,
+	End,
+};
+
+/*
+  *
+  * @export
   * @interface EnterEvent
   * 
   * This is represents an event where someone walks into view of a the camera, either from the top, bottom, left, or right.
