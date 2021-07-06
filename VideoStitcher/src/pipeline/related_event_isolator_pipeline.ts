@@ -1,11 +1,10 @@
 import { PlotGraphMessage } from "../services/graph_service"
 import { EnterEvent, ExitEvent, FinalizedEvent, EventsAreTheSame } from "../types/events"
 import { CanCollateEvents, DoCollateEnterAndExit } from "./services/event_collator"
-import { IsolateHumanEventsFromObjectID } from "./isolators/object_id_isolator"
 
 export const InternalFinalizeEvents = (event: EnterEvent | ExitEvent): FinalizedEvent => {
 	if (event == undefined) return undefined;
-	const events = IsolateHumanEventsFromObjectID(event.events, true)
+	const events = event.events;
 	return {
 		id: event.id,
 		startTime: events[0].timestamp,

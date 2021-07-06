@@ -7,7 +7,7 @@ import { HumanEvent } from "../../types/human_event"
   *
   * @param {Map<number, HumanEvent[]>} [allEvents] A map of objectID to human event list
   *
-  * @return {Vec2} Returns the resulting vector [a.x + b.x, a.y + b.y]
+  * @return {Map<number, HumanEvent[]>} Returns the resulting vector [a.x + b.x, a.y + b.y]
   * */
 export const IsolateEdgeEvents = (allEvents: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
 	// Create a new map for our edge events

@@ -22,14 +22,14 @@ export const GetVelocity = (a: HumanEvent, b: HumanEvent): Vec2 => {
   * @method Normalizes a velocity so that its components are either -1, 0, or 1 and nothing in between
   *
   * @param {Vec2} [a] The velocity to normalize
-  * @param {Vec2} [threshold] The threshold at which a velocity can be considered moving. This is a positive vector.
+  * @param {Vec2} [threshold] The threshold at which a velocity can be considered moving. This is a positive vector. By default this is 0 in both axes
   * If the X threshold is 0.05 / 1000, an object will only be considered moving right if it has a velocity in the x direction that is greater than that.
   *
   * @return {Vec2} Returns a velocity, where the x and y values are either -1, 0, or 1, and nothing in between. 
   * If it is moving right, it's velocity will be 1 in on the x axis. 
   * If it is moving up, it's velocity will be -1 on the y axis
   * */
-export const NormalizeVelocity = (a: Vec2, threshold: Vec2 = { x: 0, y: 0 }): Vec2 => {
+export function NormalizeVelocity(a: Vec2, threshold: Vec2 = { x: 0, y: 0 }): Vec2 {
 	// If the velocity does not pass the threshold, it will be a 0 in that axis
 	let normalizedVelocity: Vec2 = { x: 0, y: 0 };
 
@@ -81,10 +81,10 @@ export const NormalizePosition = (a: Vec2, threshold: Vec2): Vec2 => {
 
 	if (a.y > 1 - threshold.y) {
 		// If the y position is less than the 1 - threshold, we will give the y axis a -1
-		normalizedPosition.y = -1;
+		normalizedPosition.y = 1;
 	} else if (a.y < threshold.y) {
 		// If the y position is less than the threshold, we will give the y axis a 1
-		normalizedPosition.y = 1;
+		normalizedPosition.y = -1;
 	}
 
 	// Return the normalized vector
