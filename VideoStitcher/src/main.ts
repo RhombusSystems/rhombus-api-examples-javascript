@@ -10,7 +10,7 @@ import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
 import { GetHumanEvents } from "./services/human_events_service"
 import { IsolateEventsFromLength } from "./pipeline/isolators/event_length_isolator"
-import { CollateEvents } from "./pipeline/services/event_collator"
+import { CollateHumanEvents } from "./pipeline/services/event_collator"
 import { ExitEvent } from "./types/events"
 
 import { CameraWebserviceApi } from "@rhombus/API"
@@ -93,7 +93,7 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	for (const cam of camList) {
 		const human_events = await GetHumanEvents(configuration, cam, currentTime, duration)
-		const isolated_events = IsolateEventsFromLength(CollateEvents(human_events));
+		const isolated_events = IsolateEventsFromLength(CollateHumanEvents(human_events));
 		isolated_events.forEach((es) => {
 			const event = es[0];
 			recent_human_events.push({
@@ -133,10 +133,10 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 			}
 		];
 		const response = await prompts(manualSelectQuestions);
-		
+
 		const camera = camList.find((element) => element.uuid == response.cameraUUID);
 
-		if(camera == undefined) {
+		if (camera == undefined) {
 			console.log("Camera UUID not found!");
 			return;
 		}

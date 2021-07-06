@@ -4,7 +4,7 @@ import { EnterEvent, ExitEvent } from "../../types/events"
 import { GetVelocity } from "../../utils/velocity"
 import { abs, compare, subtract } from "../../types/vector"
 
-export const CollateEvents = (events: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
+export const CollateHumanEvents = (events: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
 	for (let [currentID, currentEvents] of events) {
 		for (let i = currentEvents.length - 1; i >= 0; i--) {
 			for (let [otherID, otherEvents] of events) {

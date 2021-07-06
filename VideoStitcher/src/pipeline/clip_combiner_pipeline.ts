@@ -1,4 +1,3 @@
-import { HumanEvent } from "../types/human_event"
 import { FinalizedEvent } from "../types/events"
 import { FetchVOD } from "../services/vod_fetcher"
 import { FetchMediaURIs } from "../services/media_uri_fetcher"

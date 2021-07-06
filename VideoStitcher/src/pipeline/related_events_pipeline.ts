@@ -5,7 +5,7 @@ import { DetectEdgeEvents, EdgeEventsType } from "./services/edge_event_detector
 import { IsolateEventsFromObjectID } from "./isolators/object_id_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
-import { CollateEvents } from "./services/event_collator"
+import { CollateHumanEvents } from "./services/event_collator"
 // import { IsolateCameras } from "../services/camera_position_isolator"
 import { GetValidCameras } from "../rasterization/rasterizer"
 import { Camera } from "../types/camera"
@@ -22,7 +22,7 @@ export const RelatedEventsPipeline = async (configuration: Configuration, exitEv
 
 		for (const otherCam of _cameras) {
 			const otherHumanEvents = IsolateEventsFromLength(await GetHumanEvents(configuration, otherCam, startTime, detectionDuration));
-			const collatedEvents = IsolateEventsFromLength(IsolateEventsFromObjectID(CollateEvents(otherHumanEvents)));
+			const collatedEvents = IsolateEventsFromLength(IsolateEventsFromObjectID(CollateHumanEvents(otherHumanEvents)));
 			const edgeEvents = IsolateEventsFromLength(DetectEdgeEvents(collatedEvents, EdgeEventsType.Begin));
 			const velocityEvents = IsolateVelocities(edgeEvents, EdgeEventsType.Begin);
 			console.log("other events " + otherCam.uuid + ", " + velocityEvents.size);

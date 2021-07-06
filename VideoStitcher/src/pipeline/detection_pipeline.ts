@@ -7,7 +7,7 @@ import { DetectEdgeEvents, EdgeEventsType } from "./services/edge_event_detector
 import { IsolateEventsFromObjectID } from "./isolators/object_id_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
-import { CollateEvents } from "./services/event_collator"
+import { CollateHumanEvents } from "./services/event_collator"
 import { GetCameraList } from "../services/camera_list"
 import { SortEvents } from "../services/graph_service"
 import { Camera } from "../types/camera"
@@ -38,7 +38,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
 	const human_events = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
 
-	const res = CollateEvents(human_events);
+	const res = CollateHumanEvents(human_events);
 
 	console.log(res.size + " human events found");
 

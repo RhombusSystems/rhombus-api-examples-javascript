@@ -26,7 +26,7 @@ export interface EnterEvent {
 	events: HumanEvent[];
 
 	/*
-	  * @type {Vec2} The X and Y velocity in permyriad position of the box / second. 
+	  * @type {Vec2} The X and Y velocity in permyriad position of the box / milisecond. 
 	  * This is just the velocity of the bounding box, it is not really a good indicator of the velocity of the real object, 
 	  * but we use it regardless for the isolation of different events
 	  *
@@ -68,7 +68,7 @@ export interface ExitEvent {
 	relatedEvents: EnterEvent[];
 
 	/*
-	  * @type {Vec2} The X and Y velocity in permyriad position of the box / second. 
+	  * @type {Vec2} The X and Y velocity in permyriad position of the box / milisecond. 
 	  * This is just the velocity of the bounding box, it is not really a good indicator of the velocity of the real object, 
 	  * but we use it regardless for the isolation of different events
 	  *
