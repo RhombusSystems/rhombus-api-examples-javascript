@@ -2,7 +2,7 @@ import { RHOMBUS_HEADERS } from "../utils/headers"
 
 import { Configuration, CameraWebserviceApi } from "@rhombus/API"
 import { Camera } from "../types/camera";
-import { DegreesToRadians, ConvertRhombusAngle } from "../utils/unit_circle"
+import { DegreesToRadians, ConvertRhombusAngle } from "../utils/math"
 
 
 export const GetCameraList = async (configuration: Configuration): Promise<Camera[]> => {

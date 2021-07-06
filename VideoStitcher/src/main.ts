@@ -9,8 +9,8 @@ import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
 import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator_pipeline"
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
 import { GetHumanEvents } from "./services/human_events_service"
-import { IsolateEventsFromLength } from "./services/event_length_isolator"
-import { CollateEvents } from "./services/event_collator"
+import { IsolateEventsFromLength } from "./pipeline/isolators/event_length_isolator"
+import { CollateEvents } from "./pipeline/services/event_collator"
 import { ExitEvent } from "./types/events"
 
 import { CameraWebserviceApi } from "@rhombus/API"
@@ -39,7 +39,7 @@ import * as prompts from "prompts"
 export interface RecentHumanEventInfo {
 	timestamp: number;
 	objectID: number;
-	camUUID: string;
+	camera: Camera;
 };
 
 export const PrintRecentHumanEvents = async (configuration: Configuration, events: RecentHumanEventInfo[], cameras: Camera[]): Promise<void> => {
@@ -58,8 +58,8 @@ export const PrintRecentHumanEvents = async (configuration: Configuration, event
 	let i = 0;
 
 	for (const event of events) {
-		const frameUri = baseFrameURIs.get(event.camUUID) + event.camUUID + "/" + event.timestamp + "/thumb.jpeg";
-		urls.push("(" + i + ") URL: " + frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camUUID);
+		const frameUri = baseFrameURIs.get(event.camera.uuid) + event.camera.uuid + "/" + event.timestamp + "/thumb.jpeg";
+		urls.push("(" + i + ") URL: " + frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camera.uuid);
 		urls.push("--------------------------------------");
 		i++;
 	}
@@ -92,14 +92,14 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	const currentTime = Math.round(new Date().getTime() / 1000) - duration;
 
 	for (const cam of camList) {
-		const human_events = await GetHumanEvents(configuration, cam.uuid, currentTime, duration)
+		const human_events = await GetHumanEvents(configuration, cam, currentTime, duration)
 		const isolated_events = IsolateEventsFromLength(CollateEvents(human_events));
 		isolated_events.forEach((es) => {
 			const event = es[0];
 			recent_human_events.push({
 				timestamp: event.timestamp,
 				objectID: event.id,
-				camUUID: event.camUUID,
+				camera: event.camera,
 			});
 		});
 	}
@@ -133,9 +133,17 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 			}
 		];
 		const response = await prompts(manualSelectQuestions);
+		
+		const camera = camList.find((element) => element.uuid == response.cameraUUID);
+
+		if(camera == undefined) {
+			console.log("Camera UUID not found!");
+			return;
+		}
+
 		selectedEvent = {
 			objectID: response.objectID,
-			camUUID: response.cameraUUID,
+			camera: camera,
 			timestamp: response.timestamp
 		};
 	} else {
@@ -158,7 +166,7 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
 	// Walking between 3 cameras 158, 1625092837156, SdFCcHcOTwa4HcSZ3CpsFQ
-	res = await DetectionPipeline(configuration, selectedEvent.camUUID, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
+	res = await DetectionPipeline(configuration, selectedEvent.camera, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
 
 	if (res.length > 0) {
 		const events = await RelatedEventsPipeline(configuration, res, camList);

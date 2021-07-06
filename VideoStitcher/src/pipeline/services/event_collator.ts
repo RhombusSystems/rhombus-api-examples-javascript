@@ -1,8 +1,8 @@
-import { HumanEvent } from "../types/human_event"
-import { SortHumanEventsByTime } from "./graph_service"
-import { EnterEvent, ExitEvent } from "../types/events"
-import { GetVelocity } from "../utils/velocity"
-import { abs, compare, subtract } from "../types/vector"
+import { HumanEvent } from "../../types/human_event"
+import { SortHumanEventsByTime } from "../../services/graph_service"
+import { EnterEvent, ExitEvent } from "../../types/events"
+import { GetVelocity } from "../../utils/velocity"
+import { abs, compare, subtract } from "../../types/vector"
 
 export const CollateEvents = (events: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
 	for (let [currentID, currentEvents] of events) {
@@ -40,7 +40,7 @@ export const CanCollateEvents = (a: EnterEvent, b: EnterEvent): boolean => {
 	const aEvent = a.events[a.events.length - 1];
 	const bEvent = b.events[0];
 	const timeDelta = bEvent.timestamp - aEvent.timestamp;
-	if (aEvent.camUUID == bEvent.camUUID && timeDelta < 5000 && timeDelta > 0 && compare(abs(subtract(aEvent.position, bEvent.position)), 0.1) == 1)
+	if (aEvent.camera.uuid == bEvent.camera.uuid && timeDelta < 5000 && timeDelta > 0 && compare(abs(subtract(aEvent.position, bEvent.position)), 0.1) == 1)
 		return true;
 	const aVelocity = GetVelocity(aEvent, a.events[a.events.length - 2]);
 	const bVelocity = GetVelocity(b.events[1], bEvent);

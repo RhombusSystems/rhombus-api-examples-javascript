@@ -1,8 +1,9 @@
-import { HumanEvent } from "../types/human_event"
+import { HumanEvent } from "../../types/human_event"
+import { MinimumEventLength } from "../../environment/environment"
 
 export const IsolateEventsFromLength = (events: Map<number, HumanEvent[]>): Map<number, HumanEvent[]> => {
 	events.forEach((es: HumanEvent[], id: number,) => {
-		if (es.length < 2) {
+		if (es.length < MinimumEventLength) {
 			events.delete(id);
 		}
 	});

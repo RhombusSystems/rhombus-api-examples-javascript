@@ -1,7 +1,7 @@
 import { PlotGraphMessage } from "../services/graph_service"
 import { EnterEvent, ExitEvent, FinalizedEvent, ExitEventIsRelated, EventsAreTheSame } from "../types/events"
-import { CanCollateEvents, DoCollateEnterAndExit } from "../services/event_collator"
-import { IsolateHumanEventsFromObjectID } from "../services/object_id_isolator"
+import { CanCollateEvents, DoCollateEnterAndExit } from "./services/event_collator"
+import { IsolateHumanEventsFromObjectID } from "./isolators/object_id_isolator"
 
 export const InternalFinalizeEvents = (event: EnterEvent | ExitEvent): FinalizedEvent => {
 	if (event == undefined) return undefined;

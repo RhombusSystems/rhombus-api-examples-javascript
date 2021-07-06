@@ -4,15 +4,16 @@ import { RHOMBUS_HEADERS } from "../utils/headers"
 import { HumanEvent } from "../types/human_event"
 
 import { Vec2 } from "../types/vector"
+import { Camera } from "../types/camera";
 
 
-export const GetHumanEvents = async (config: Configuration, camUuid: string, startTime: number, duration: number): Promise<Map<number, HumanEvent[]>> => {
+export const GetHumanEvents = async (config: Configuration, camera: Camera, startTime: number, duration: number): Promise<Map<number, HumanEvent[]>> => {
 	let api: CameraWebserviceApi;
 	api = new CameraWebserviceApi(config);
 
 	let ids = new Map<number, FootageBoundingBoxType[]>();
 
-	const res = await api.getFootageBoundingBoxes({ cameraUuid: camUuid, startTime: startTime, duration: duration }, RHOMBUS_HEADERS);
+	const res = await api.getFootageBoundingBoxes({ cameraUuid: camera.uuid, startTime: startTime, duration: duration }, RHOMBUS_HEADERS);
 
 	let rawEvents: FootageBoundingBoxType[] = res.footageBoundingBoxes.filter((event) => event.a == ActivityEnum.MOTIONHUMAN);
 
@@ -48,7 +49,7 @@ export const GetHumanEvents = async (config: Configuration, camUuid: string, sta
 				dimensions: dimensions,
 				id: box.objectId,
 				timestamp: box.ts,
-				camUUID: camUuid,
+				camera: camera,
 			};
 
 

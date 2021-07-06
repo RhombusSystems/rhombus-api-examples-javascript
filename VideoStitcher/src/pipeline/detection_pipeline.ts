@@ -3,15 +3,16 @@ import { ExitEvent, ExitEventsFromMap } from "../types/events"
 import { Configuration } from "@rhombus/API"
 
 import { GetHumanEvents } from "../services/human_events_service"
-import { DetectEdgeEvents, EdgeEventsType } from "../services/edge_event_detector"
-import { IsolateObjectIDEvents } from "../services/object_id_isolator"
-import { IsolateVelocities } from "../services/velocity_isolator"
-import { IsolateEventsFromLength } from "../services/event_length_isolator"
-import { CollateEvents } from "../services/event_collator"
+import { DetectEdgeEvents, EdgeEventsType } from "./services/edge_event_detector"
+import { IsolateEventsFromObjectID } from "./isolators/object_id_isolator"
+import { IsolateVelocities } from "./isolators/velocity_isolator"
+import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
+import { CollateEvents } from "./services/event_collator"
 import { GetCameraList } from "../services/camera_list"
 import { SortEvents } from "../services/graph_service"
+import { Camera } from "../types/camera"
 
-export const DetectionPipeline = async (configuration: Configuration, camUUID: string, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
+export const DetectionPipeline = async (configuration: Configuration, camera: Camera, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
 	let events: ExitEvent[] = [];
 
 	// for (const camera of cameras) {
@@ -19,7 +20,7 @@ export const DetectionPipeline = async (configuration: Configuration, camUUID: s
 	const offset = 0.5 * 60;
 	const currentTime = Math.round(new Date().getTime() / 1000) - duration - offset;
 	console.log("Current time " + currentTime);
-	console.log(camUUID);
+	console.log(camera.uuid);
 	console.log(objectID)
 
 	// Unintentional but works really well (works) 1623884880
@@ -35,7 +36,7 @@ export const DetectionPipeline = async (configuration: Configuration, camUUID: s
 	// Basically works as expected (works) 1624488420
 	// Wow ok didn't even mean to do that (works) 1624553931
 	// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
-	const human_events = await GetHumanEvents(configuration, camUUID, timestamp - offset, duration)
+	const human_events = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
 
 	const res = CollateEvents(human_events);
 
@@ -49,7 +50,7 @@ export const DetectionPipeline = async (configuration: Configuration, camUUID: s
 
 	console.log(edgeEvents.size + " were found from being close to the edge");
 
-	const exitEvents = IsolateVelocities(edgeEvents, EdgeEventsType.End, camUUID);
+	const exitEvents = IsolateVelocities(edgeEvents, EdgeEventsType.End);
 
 	console.log(exitEvents.size + " were found from velocity");
 

@@ -1,5 +1,5 @@
 import { Vec2 } from "../types/vector";
-import { DegreesToRadians } from "./unit_circle"
+import { DegreesToRadians } from "./math"
 
 namespace WGSConstants {
 	export const EARTH_MAJOR_AXIS = 6378137.0;

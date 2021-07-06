@@ -5,7 +5,7 @@ import { IOServer } from "../server/server"
 import { Vec2 } from "../types/vector"
 import { GeodeticToENUSimpleApproximation } from "../utils/utils"
 import { Rotate, Apply } from "../types/matrix"
-import { NormalizeAngle } from "../utils/unit_circle"
+import { NormalizeAngle } from "../utils/math"
 import { GetCanvasSize } from "../rasterization/canvas_size"
 import { RasterizeCameras, RasterizeVelocity } from "../rasterization/rasterizer"
 
@@ -85,7 +85,7 @@ export const GetCameraPlot = (camera: Camera, origin: Camera): CameraPlot => {
 export const SendCameraPlot = (cameras: Camera[], event: ExitEvent) => {
 	if (!event) return;
 	cameras.forEach((cam) => {
-		if (cam.uuid == event.events[0].camUUID) {
+		if (cam.uuid == event.events[0].camera.uuid) {
 			const plots = cameras.map(camera => GetCameraPlot(camera, cam));
 			const canvasSize = GetCanvasSize(cameras, cam);
 			const screen = RasterizeCameras(plots.filter(camera => camera.uuid != cam.uuid), 1, canvasSize.x);

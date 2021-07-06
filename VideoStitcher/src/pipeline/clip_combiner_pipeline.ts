@@ -27,7 +27,7 @@ export const DownloadFinalizedEventRecursive = async (config: Configuration, typ
 	console.log(event.startTime);
 	const startTime = Math.floor(event.startTime / 1000 - (index == 0 ? 4 : 1.5));
 	const endTime = Math.ceil(event.endTime / 1000 + (event.followingEvent == undefined ? 4 : 0));
-	const camUUID = event.data[0].camUUID;
+	const camUUID = event.data[0].camera.uuid;
 	const uri_res = await FetchMediaURIs(config, camUUID, 60, type);
 	await FetchVOD(config, uri_res.federatedToken, uri_res.uri, type, dir, index.toString() + ".mp4", startTime, endTime);
 

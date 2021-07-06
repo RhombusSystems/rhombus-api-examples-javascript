@@ -1,4 +1,4 @@
-import { HumanEvent } from "../types/human_event"
+import { HumanEvent } from "../../types/human_event"
 
 export enum EdgeEventsType {
 	Begin,

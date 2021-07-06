@@ -3,7 +3,7 @@ import { GetCameraPlot, CameraPlot } from "../services/graph_service"
 import { Camera } from "../types/camera"
 import { TriangleFromCameraPlot, PointInsideTriangle } from "./triangle"
 import { ExitEvent } from "../types/events"
-import { NormalizeVelocity } from "../services/velocity_isolator"
+import { NormalizeVelocity } from "../utils/velocity"
 import { Rotate, Apply } from "../types/matrix"
 import { LeftOfLine } from "./triangle"
 import { GetCanvasSize } from "./canvas_size"
@@ -183,7 +183,7 @@ export const RasterizeVelocity = (exitEvent: ExitEvent, captureRadius: number, s
 }
 
 export const GetValidCameras = (cameras: Camera[], exitEvent: ExitEvent, pixelsPerMeter: number, captureRadius: number): Camera[] => {
-	const origin = cameras.find(cam => cam.uuid == exitEvent.events[0].camUUID);
+	const origin = cameras.find(cam => cam.uuid == exitEvent.events[0].camera.uuid);
 	cameras = cameras.filter(cam => cam.uuid != origin.uuid);
 	const canvasSize = GetCanvasSize(cameras, origin);
 	const cameraPlots = cameras.map(cam => GetCameraPlot(cam, origin));
