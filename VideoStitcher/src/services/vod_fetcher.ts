@@ -91,6 +91,7 @@ export const saveClip = async (path: string, uri: string, write: boolean = false
   *
   * @param {Configuration} [config] the configuration with our API token
   * @param {string} [federatedToken] the federated token which will be used to download the files. Without this we would get a 401 authentication error
+  * @param {ConnectionType} [type] Whether to use LAN or WAN for the connection, by default LAN and unless you are on a different connection, you should really just use LAN
   * @param {string} [uri] the VOD uri to download from
   * @param {string} [duration] the duration in seconds of the clip to download
   *
