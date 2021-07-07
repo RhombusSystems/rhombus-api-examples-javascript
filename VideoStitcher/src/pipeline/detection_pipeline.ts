@@ -9,6 +9,8 @@ import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
 import { Camera } from "../types/camera"
 import { CompareEvents } from "../types/events"
 
+import { Environment } from "../environment/environment"
+
 /*
   *
   * @export
@@ -23,11 +25,11 @@ import { CompareEvents } from "../types/events"
   * */
 export const DetectionPipeline = async (configuration: Configuration, camera: Camera, objectID: number, timestamp: number): Promise<ExitEvent[]> => {
 
-	// TODO: Make this not hardcoded
 	// Get the duration of time in seconds to look for human events. This is by default 10 minutes.
-	const duration = 10 * 60;
-	// A small offset in seconds is good so that we don't accidentally barely miss the object ID. This is by default 30 seconds
-	const offset = 0.5 * 60;
+	const duration = Environment.ExitEventDetectionDurationSeconds;
+
+	// A small offset in seconds is good so that we don't accidentally barely miss the object ID. This is by default 30 seconds.
+	const offset = Environment.ExitEventDetectionOffsetSeconds;
 
 	// Unintentional but works really well (works) 1623884880
 	// Sick af because I also didn't even mean to do this (works) 1623945969

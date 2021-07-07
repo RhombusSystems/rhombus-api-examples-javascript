@@ -3,6 +3,7 @@ import { RHOMBUS_HEADERS } from "../utils/headers"
 import { Configuration, CameraWebserviceApi } from "@rhombus/API"
 import { Camera } from "../types/camera";
 import { DegreesToRadians, ConvertRhombusAngle } from "../utils/math"
+import { GetCameraSpecs } from "../utils/rhombus_camera_info"
 
 /*
   *
@@ -22,15 +23,14 @@ export const GetCameraList = async (configuration: Configuration): Promise<Camer
 	const res = await api.getMinimalCameraStateList({}, RHOMBUS_HEADERS);
 	res.cameraStates = res.cameraStates.filter(element => element.latitude != undefined && element.longitude != undefined && element.directionRadians);
 
+
 	// Return the result but mapped to our own camera interface
 	return res.cameraStates.map(camera => <Camera>{
 		uuid: camera.uuid,
 		// We will want to convert the Rhombus radians angle to our own coordinate space
 		rotationRadians: ConvertRhombusAngle(camera.directionRadians),
 		location: { x: camera.latitude, y: camera.longitude },
-
-		// TODO: fix these hardcoded values
-		FOV: DegreesToRadians(96),
-		viewDistance: 20.72,
+		FOV: DegreesToRadians(GetCameraSpecs(camera.hwVariation).FOV),
+		viewDistance: GetCameraSpecs(camera.hwVariation).viewDistance,
 	});
 }

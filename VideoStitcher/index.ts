@@ -1,3 +1,9 @@
+// Get the API Key from the environment, for more info see https://apidocs.rhombussystems.com/reference#introduction
+//
+// Set this by creating a ".env" file in the root source directory with the contents: API_KEY=<YOUR API KEY HERE>
+// Example: API_KEY=Rh0MbU$-iS-AwEs0M3
+require('dotenv').config()
+
 /*
   * 
   * @import Main so that we can run it from here
@@ -10,11 +16,6 @@ import { main } from "./src/main"
   * */
 import { ConnectionType } from "./src/types/connection_type"
 
-// Get the API Key from the environment, for more info see https://apidocs.rhombussystems.com/reference#introduction
-//
-// Set this by creating a ".env" file in the root source directory with the contents: API_KEY=<YOUR API KEY HERE>
-// Example: API_KEY=Rh0MbU$-iS-AwEs0M3
-require('dotenv').config()
 
 
 

@@ -1,10 +1,9 @@
-# Rhombus Extended AI Module
+# Rhombus Video Stitcher
 
 ## What is this
-Rhombus Extended AI Module is a NodeJS server application written in Typescript that identifies objects in Rhombus Systems cameras using the Tensorflow COCO model. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
+Rhombus Video Stitcher is a NodeJS server application written in Typescript that attempts to automatically stitch together different video clips to follow someone around seemlessly. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
 
 The code demos how to send API requests to Rhombus using API token authentication and how to download VODs from Rhombus.
-
 
 ## Installation
 
@@ -17,9 +16,9 @@ NOTE: If you have already generated the Typescript client and have a RhombusType
 
 ### Running the demo
 
-3. Run `cd ExtendedAIModule`
-4. Run `npm install` in the ExtendedAIModule directory
-5. Create a `.env` file in the ExtendedAIModule source directory using the following structure (without the angle brackets)
+3. Run `cd VideoStitcher`
+4. Run `npm install` in the VideoStitcher directory
+5. Create a `.env` file in the VideoStitcher source directory using the following structure (without the angle brackets)
 
     API_KEY=<YOUR API KEY>
 

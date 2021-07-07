@@ -6,6 +6,8 @@ import { Configuration } from "@rhombus/API"
 
 import { ConnectionType } from "../types/connection_type"
 
+import { Environment } from "../environment/environment"
+
 /*
   *
   * @import We are going to call FFMpeg to generate our frame JPEGs, so we will need both ffmpeg and the child process to execute our commands
@@ -34,13 +36,12 @@ const run = util.promisify(exec);
   * @param {number} [index] The recursive download index. When this function calls itself it will increase this value, you shouldn't really ever set this manually when calling the function.
   * */
 export const DownloadFinalizedEventRecursive = async (configuration: Configuration, type: ConnectionType, event: FinalizedEvent, dir: string, index: number = 0): Promise<void> => {
-	// TODO: Make these values not hardcoded
 	// We are going to get our start time in seconds (thus divided by 1000) and then we will add a bit of padding to make sure we really download the full clip.
 	// If the index is 0 (meaning our first clip) we will add a larger padding than the rest because oftentimes the exit event might not include some of the earlier events
-	const startTime = Math.floor(event.startTime / 1000 - (index == 0 ? 4 : 1.5));
+	const startTime = Math.floor(event.startTime / 1000 - (index == 0 ? Environment.ClipCombinationEdgePaddingMiliseconds / 1000 : Environment.ClipCombinationPaddingMiliseconds / 1000));
 
 	// For the end time we will do the same thing. The end time has padding as well.
-	const endTime = Math.ceil(event.endTime / 1000 + (event.followingEvent == undefined ? 4 : 0));
+	const endTime = Math.ceil(event.endTime / 1000 + (event.followingEvent == undefined ? Environment.ClipCombinationEdgePaddingMiliseconds / 1000 : Environment.ClipCombinationPaddingMiliseconds / 1000));
 
 	// Get the camera UUID
 	const camUUID = event.data[0].camera.uuid;
@@ -101,8 +102,7 @@ export const ClipCombinerPipeline = async (config: Configuration, type: Connecti
 		// Run the FFMpeg command to combine the downloaded mp4s based on the vidlist.txt
 		await run(pathToFFMpeg + " -f concat -safe 0 -i " + dir + "vidlist.txt -c copy " + dir + "output.mp4");
 	} catch (e) {
-		// TODO: Make this not hardcoded
-		if (retryIndex == 2) {
+		if (retryIndex >= Environment.ClipCombinationRetryMax - 1) {
 			console.log("Something went wrong, failed to combine mp4 clips! Ouput directory " + dir);
 			return;
 		} else {

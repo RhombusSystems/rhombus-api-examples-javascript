@@ -21,9 +21,8 @@ import { Environment } from "../environment/environment"
   * */
 export const RelatedEventsPipeline = async (configuration: Configuration, exitEvents: ExitEvent[], cameras: Camera[]): Promise<ExitEvent[]> => {
 	for (let event of exitEvents) {
-		// TODO: Make the ppm not hardcoded
 		// Get a list of valid cameras based on the position of the exit event
-		let _cameras: Camera[] = GetValidCameras(cameras, event, 10, Environment.CaptureRadiusMeters);
+		let _cameras: Camera[] = GetValidCameras(cameras, event, Environment.PixelsPerMeter, Environment.CaptureRadiusMeters);
 
 		console.log("Looking through cameras");
 		console.log(_cameras);
@@ -34,9 +33,8 @@ export const RelatedEventsPipeline = async (configuration: Configuration, exitEv
 		// Get the startTime
 		const startTime = Math.floor(events[events.length - 1].timestamp / 1000);
 
-		// TODO: Make the detection duration not hardcoded
 		// Get the duration in seconds of how far in the future to look for related human events
-		const detectionDuration = 30;
+		const detectionDuration = Environment.RelatedEventDetectionDurationSeconds;
 
 		// Loop through all of the cameras that are valid
 		for (const otherCam of _cameras) {

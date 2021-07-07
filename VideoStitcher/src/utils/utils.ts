@@ -40,3 +40,14 @@ export const GeodeticToENUSimpleApproximation = (pos: Vec2, base: Vec2): Vec2 =>
 		y: distNorth
 	};
 }
+
+/*
+  *
+  * @export
+  * @method Converts a distance in feet to distance in meters
+  *
+  * @param {number} [feet] The value in feet to convert
+  *
+  * @return {number} Returns the value in meters
+  * */
+export const FeetToMeters = (feet: number): number => feet / 3.281;

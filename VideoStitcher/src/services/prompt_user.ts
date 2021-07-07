@@ -6,6 +6,8 @@ import { Configuration } from "@rhombus/API"
 import { GetHumanEvents } from "../services/human_events_service"
 import { IsolateEventsFromLength } from "../pipeline/isolators/event_length_isolator"
 
+import { Environment } from "../environment/environment"
+
 import * as prompts from "prompts"
 
 /*
@@ -91,9 +93,8 @@ export const PromptUser = async (configuration: Configuration, cameras: Camera[]
 	// Create an array where we will put our recent human events
 	let recentHumanEvents: RecentHumanEventInfo[] = [];
 
-	// TODO: Don't hardcode this
 	// The duration in seconds in the past to look for recent human events
-	const duration = 10 * 60;
+	const duration = Environment.SuggestedHumanEventSecondsSinceCurrentTime;
 
 	// The starting time in seconds (hence the /1000) since epoch where we will start looking for human events
 	const currentTime = Math.round(new Date().getTime() / 1000) - duration;

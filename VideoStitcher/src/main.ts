@@ -78,8 +78,6 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 		return;
 	}
 
-	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
-	// Walking between 3 cameras 158, 1625092837156, SdFCcHcOTwa4HcSZ3CpsFQ
 	res = await DetectionPipeline(configuration, selectedEvent.camera, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
 
 	// If there are more than one exit event found, that means we can continue
