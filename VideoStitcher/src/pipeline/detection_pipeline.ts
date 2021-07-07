@@ -31,20 +31,6 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	// A small offset in seconds is good so that we don't accidentally barely miss the object ID. This is by default 30 seconds.
 	const offset = Environment.ExitEventDetectionOffsetSeconds;
 
-	// Unintentional but works really well (works) 1623884880
-	// Sick af because I also didn't even mean to do this (works) 1623945969
-	// Super basic example (works) 1623962260
-	// This one is somewhat broken, but I won't worry about it (broken) 1623963641
-	// Somewhat broken now, need to fix (broken) 1623969300
-	// Good one for testing (works) 1623970642
-	// Still broken, but less so (broken) 1624314992
-	// Kinda works, but still quite buggy (broken) 1624317870
-	// Need to fix (broken) 1624398830
-	// Go beneath camera (in progress) 1624471346
-	// Basically works as expected (works) 1624488420
-	// Wow ok didn't even mean to do that (works) 1624553931
-	// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
-
 	// Get an array of human events within the timeframe
 	const res = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
 

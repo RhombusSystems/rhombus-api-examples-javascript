@@ -22,9 +22,16 @@ NOTE: If you have already generated the Typescript client and have a RhombusType
 
     API_KEY=<YOUR API KEY>
 
-    CAM_UUID=<YOUR CAMERA UUID>
-
     CONNECTION_TYPE=<WAN OR LAN> 
 
 NOTE: CONNECTION_TYPE parameter is optional, but it will specify whether to use a WAN or LAN connection from the camera to download the VODs. It is by default LAN and unless the NodeJS server is running on a separate wifi from the camera, which would be very unlikely...
+
+There are also many other environment variables that can be set, see `src/environment/environment.ts` for more information.
+
 6. Run the example using `npm run start`
+
+You will need to either choose from a list of suggested human events or provide your own object ID, timestamp, and camera UUID to start the example.
+
+
+### Reliability
+Unfortunately due to limited information about people in the scene and relying purely on bounding box positions, this demo is not very reliable. It will give more false positives than false negatives and that is intentional, because it seems to be more beneficial to sometimes provide the user with garbage clips rather than to skip good clips because of small issues. However under good circumstances the example works pretty well. The example works best when there is only 1 person on camera, and when they follow an obvious exit path.
