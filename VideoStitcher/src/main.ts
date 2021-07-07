@@ -8,14 +8,7 @@ import { DetectionPipeline } from "./pipeline/detection_pipeline"
 import { RelatedEventsPipeline } from "./pipeline/related_events_pipeline"
 import { RelatedEventsIsolatorPipeline } from "./pipeline/related_event_isolator_pipeline"
 import { ClipCombinerPipeline } from "./pipeline/clip_combiner_pipeline"
-import { GetHumanEvents } from "./services/human_events_service"
-import { IsolateEventsFromLength } from "./pipeline/isolators/event_length_isolator"
-import { CollateHumanEvents } from "./pipeline/services/event_collator"
 import { ExitEvent } from "./types/events"
-
-import { CameraWebserviceApi } from "@rhombus/API"
-import { Camera } from "./types/camera"
-import { RHOMBUS_HEADERS } from "./utils/headers"
 
 /*
   *
@@ -33,39 +26,9 @@ import { Configuration } from "@rhombus/API"
 import { IOServer } from "./server/server"
 import { GetCameraList } from "./services/camera_list"
 
+import { PromptUser } from "./services/prompt_user"
 
-import * as prompts from "prompts"
 
-export interface RecentHumanEventInfo {
-	timestamp: number;
-	objectID: number;
-	camera: Camera;
-};
-
-export const PrintRecentHumanEvents = async (configuration: Configuration, events: RecentHumanEventInfo[], cameras: Camera[]): Promise<void> => {
-	let api: CameraWebserviceApi;
-	api = new CameraWebserviceApi(configuration);
-
-	const baseFrameURIs: Map<string, string> = new Map();
-
-	for (const cam of cameras) {
-		const res = await api.getMediaUris({ cameraUuid: cam.uuid }, RHOMBUS_HEADERS);
-		const vodURI = res.wanVodMpdUriTemplate;
-		baseFrameURIs.set(cam.uuid, vodURI.substr(0, vodURI.indexOf("/dash")) + "/media/frame/");
-	}
-
-	let urls: string[] = [];
-	let i = 0;
-
-	for (const event of events) {
-		const frameUri = baseFrameURIs.get(event.camera.uuid) + event.camera.uuid + "/" + event.timestamp + "/thumb.jpeg";
-		urls.push("(" + i + ") URL: " + frameUri + "\n Object ID: " + event.objectID + "\n Timestamp: " + event.timestamp + "\n CameraUUID: " + event.camera.uuid);
-		urls.push("--------------------------------------");
-		i++;
-	}
-	console.log("Here are the recent human events in the last 10 minutes: ");
-	urls.forEach(url => console.log(url));
-}
 
 
 /*
@@ -84,79 +47,20 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	// Create a `Configuration` which will use our API key, this config will be used in all further API calls
 	const configuration = new Configuration({ apiKey: apiKey });
 
+	// Get a list of available cameras
 	const camList = await GetCameraList(configuration);
 
-	let recent_human_events: RecentHumanEventInfo[] = [];
-
-	const duration = 10 * 60;
-	const currentTime = Math.round(new Date().getTime() / 1000) - duration;
-
-	for (const cam of camList) {
-		const human_events = await GetHumanEvents(configuration, cam, currentTime, duration)
-		const isolated_events = IsolateEventsFromLength(CollateHumanEvents(human_events));
-		isolated_events.forEach((es) => {
-			const event = es[0];
-			recent_human_events.push({
-				timestamp: event.timestamp,
-				objectID: event.id,
-				camera: event.camera,
-			});
-		});
-	}
-	await PrintRecentHumanEvents(configuration, recent_human_events, camList);
-
-
-	let selectedEvent: RecentHumanEventInfo;
-
-	const autoSelectResponse = recent_human_events.length == 0 ? { selection: -1 } : await prompts({
-		type: "number",
-		name: "selection",
-		message: "Please select a human event to follow. You can either use one of the events in the last 10 minutes OR you can type -1 to specify manually a custom objectID, timestamp, and camera.",
-	});
-
-	if (autoSelectResponse.selection == -1) {
-		const manualSelectQuestions: prompts.PromptObject<string>[] = [
-			{
-				type: "number",
-				name: "objectID",
-				message: "Object ID of the person you would like to follow",
-			},
-			{
-				type: "number",
-				name: "timestamp",
-				message: "Timestamp in miliseconds at which to start looking for this person",
-			},
-			{
-				type: "text",
-				name: "cameraUUID",
-				message: "The camera UUID in which this person appears first",
-			}
-		];
-		const response = await prompts(manualSelectQuestions);
-
-		const camera = camList.find((element) => element.uuid == response.cameraUUID);
-
-		if (camera == undefined) {
-			console.log("Camera UUID not found!");
-			return;
-		}
-
-		selectedEvent = {
-			objectID: response.objectID,
-			camera: camera,
-			timestamp: response.timestamp
-		};
-	} else {
-		selectedEvent = recent_human_events[autoSelectResponse.selection];
-	}
 
 
 	IOServer.StartServer();
 
+	// Declare our array of exit events that will be shown to the devtools
 	let res: ExitEvent[] = [];
 
+	// Declare our plot graph message which will be shown to the devtools
 	let msg: PlotGraphMessage = undefined;
 
+	// Continuously send the info to the devtools
 	setInterval(() => {
 		SendGraph(msg);
 		if (res.length > 0) {
@@ -164,22 +68,35 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 		}
 	}, 3000);
 
+
+	// Get the selected event
+	const selectedEvent = await PromptUser(configuration, camList);
+
 	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
 	// Walking between 3 cameras 158, 1625092837156, SdFCcHcOTwa4HcSZ3CpsFQ
 	res = await DetectionPipeline(configuration, selectedEvent.camera, selectedEvent.objectID, Math.floor(selectedEvent.timestamp / 1000));
 
+	// If there are more than one exit event found, that means we can continue
 	if (res.length > 0) {
+		// Look for related events
 		const events = await RelatedEventsPipeline(configuration, res, camList);
 
+		// Then isolate those related events
 		const relatedEventsRes = RelatedEventsIsolatorPipeline(events);
+
+		// Update the message for the devtools
 		msg = relatedEventsRes.msg;
 
-		SendGraph(msg);
-
+		// If there were any finalized events found
 		if (relatedEventsRes.events.length > 0) {
 
+			// Loop through them
 			for (const event of relatedEventsRes.events) {
+
+				// Final check to make sure there is at least one related event attached
 				if (event.followingEvent != undefined) {
+
+					// Then combine the clips
 					ClipCombinerPipeline(configuration, type, event);
 				}
 			}
