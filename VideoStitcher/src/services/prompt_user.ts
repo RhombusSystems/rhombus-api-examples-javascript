@@ -5,7 +5,6 @@ import { Configuration } from "@rhombus/API"
 
 import { GetHumanEvents } from "../services/human_events_service"
 import { IsolateEventsFromLength } from "../pipeline/isolators/event_length_isolator"
-import { CollateHumanEvents } from "../pipeline/services/event_collator"
 
 import * as prompts from "prompts"
 
@@ -105,7 +104,7 @@ export const PromptUser = async (configuration: Configuration, cameras: Camera[]
 		const humanEvents = await GetHumanEvents(configuration, cam, currentTime, duration)
 
 		// Collate and isolate the events from length
-		const collatedEvents = IsolateEventsFromLength(CollateHumanEvents(humanEvents));
+		const collatedEvents = IsolateEventsFromLength(humanEvents);
 
 		// Loop through each of the collated events
 		collatedEvents.forEach((es) => {

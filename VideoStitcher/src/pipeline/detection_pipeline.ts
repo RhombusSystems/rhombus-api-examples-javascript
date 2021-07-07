@@ -6,7 +6,6 @@ import { GetHumanEvents } from "../services/human_events_service"
 import { IsolateEdgeEvents } from "./isolators/edge_event_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
-import { CollateHumanEvents } from "./services/event_collator"
 import { Camera } from "../types/camera"
 import { CompareEvents } from "../types/events"
 
@@ -45,10 +44,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	// Demonstration of positioning filter (works, well actually broken but it is intentional behavior) 1624572627
 
 	// Get an array of human events within the timeframe
-	const human_events = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
-
-	// Collate the HumanEvents so that we can get an accurate picture of how many different objectIDs were found
-	const res = CollateHumanEvents(human_events);
+	const res = await GetHumanEvents(configuration, camera, timestamp - offset, duration)
 
 	console.log(res.size + " humans found");
 

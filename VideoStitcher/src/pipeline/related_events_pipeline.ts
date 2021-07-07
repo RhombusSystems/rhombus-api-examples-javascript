@@ -3,7 +3,6 @@ import { Configuration } from "@rhombus/API"
 import { GetHumanEvents } from "../services/human_events_service"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
-import { CollateHumanEvents } from "./services/event_collator"
 import { GetValidCameras } from "../rasterization/rasterizer"
 import { Camera } from "../types/camera"
 import { Environment } from "../environment/environment"
@@ -45,7 +44,7 @@ export const RelatedEventsPipeline = async (configuration: Configuration, exitEv
 			const otherHumanEvents = await GetHumanEvents(configuration, otherCam, startTime, detectionDuration);
 
 			// Collate the events and isolate them from length
-			const collatedEvents = IsolateEventsFromLength(CollateHumanEvents(otherHumanEvents));
+			const collatedEvents = IsolateEventsFromLength(otherHumanEvents);
 
 			// Isolate the events based on their velocities
 			const velocityEvents = IsolateVelocities(collatedEvents, EdgeEventsType.Begin);

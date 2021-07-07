@@ -3,13 +3,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rhombus Video Stitcher Data</title>
+    <title>Rhombus Video Stitcher Devtools</title>
     <script src="https://cdn.plot.ly/plotly-2.0.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <div id="graph" style="width:100vw;height:100vh;"></div>
-    <div id="camera_position" style="width:100vh;height:100vh;"></div>
+    <div style="display:flex;height:100vh; width:100vw;">
+      <div style="display: flex; height: 100%; width: 50%; flex-direction: column;">
+	  <h1 style="text-align: center">Position X vs Time</h1>
+	  <div id="velocity_x_graph" style="height:100vh;"></div>
+      </div>
+      <div style="display: flex; height: 100%; flex-grow:1; flex-direction: column;">
+	  <h1 style="text-align: center">Position Y vs Time</h1>
+	  <div id="velocity_y_graph" style="height:100vh;"></div>
+      </div>
+    </div>
+    <h1 style="text-align: center">Camera view rasterization</h1>
     <canvas width="1000" height="1000" id="camera_visibility_rasterized"></canvas>
     <script src="./index.js"></script> 
 </body>

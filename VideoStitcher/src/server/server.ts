@@ -32,7 +32,7 @@ export namespace IOServer {
 			console.log("Socket IO is now listening");
 		});
 
-		console.log("\x1b[34m%s\x1b[0m", "Server started at http://localhost:" + port);
+		console.log("\x1b[34m%s\x1b[0m", "To view the devtools, go to http://localhost:" + port);
 	}
 
 	export const Emit = (event: string, data: any) => {

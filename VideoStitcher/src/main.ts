@@ -51,7 +51,7 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	const camList = await GetCameraList(configuration);
 
 
-
+	// Start the dev tools server
 	IOServer.StartServer();
 
 	// Declare our array of exit events that will be shown to the devtools
@@ -71,6 +71,12 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 
 	// Get the selected event
 	const selectedEvent = await PromptUser(configuration, camList);
+
+	// Check for error when getting user input
+	if (selectedEvent == undefined) {
+		console.log("Invalid input!");
+		return;
+	}
 
 	// First really good example 86, 1625085357148, SdFCcHcOTwa4HcSZ3CpsFQ 
 	// Walking between 3 cameras 158, 1625092837156, SdFCcHcOTwa4HcSZ3CpsFQ

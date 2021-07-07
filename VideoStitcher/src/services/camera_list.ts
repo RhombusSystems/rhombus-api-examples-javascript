@@ -20,6 +20,7 @@ export const GetCameraList = async (configuration: Configuration): Promise<Camer
 
 	// Send the request to Rhombus to get the camera state list
 	const res = await api.getMinimalCameraStateList({}, RHOMBUS_HEADERS);
+	res.cameraStates = res.cameraStates.filter(element => element.latitude != undefined && element.longitude != undefined && element.directionRadians);
 
 	// Return the result but mapped to our own camera interface
 	return res.cameraStates.map(camera => <Camera>{
