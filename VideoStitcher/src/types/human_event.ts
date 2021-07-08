@@ -1,5 +1,5 @@
 import { Vec2 } from "./vector"
-import { Camera} from "./camera"
+import { Camera } from "./camera"
 
 /*
   *
@@ -22,7 +22,7 @@ export interface HumanEvent {
 	position: Vec2;
 
 	/*
-	  * @type {number} The size permyriad of the bounding box this human event is for
+	  * @type {Vec2} The size permyriad of the bounding box this human event is for
 	  * @memberof HumanEvent
 	  * */
 	dimensions: Vec2;
