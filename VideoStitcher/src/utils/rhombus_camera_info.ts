@@ -22,11 +22,11 @@ export interface RhombusCameraSpecs {
 /*
   *
   * @export
-  * @method Gets the camera FOV for a specific model
+  * @method Gets the camera spec information for a specific model
   *
-  * @param {Configuration} [configuration] The API configuration to use when making API requests
+  * @param {HardwareVariationEnum} [cameraHW] The camera hardware model
   *
-  * @return {Promise<Camera[]>} Returns the list of cameras
+  * @return {RhombusCameraSpecs} Returns the hardware specs of the camera
   * */
 export const GetCameraSpecs = (cameraHW: HardwareVariationEnum): RhombusCameraSpecs => {
 	switch (cameraHW) {
