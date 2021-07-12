@@ -53,7 +53,7 @@ export const CanCollateEvents = (a: EnterEvent, b: EnterEvent): boolean => {
 /*
   *
   * @export
-  * @method Comnbines Human Events that are similar, even if object IDs do not match
+  * @method Combines Human Events that are similar, even if object IDs do not match
   *
   * @param {EnterEvent} [a] The enter event to combine the exit event with
   * @param {ExitEvent} [b] The exit event to combine the enter event with

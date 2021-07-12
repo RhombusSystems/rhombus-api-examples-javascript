@@ -50,7 +50,6 @@ export const main = async (apiKey: string, type: ConnectionType) => {
 	// Get a list of available cameras
 	const camList = await GetCameraList(configuration);
 
-
 	// Start the dev tools server
 	IOServer.StartServer();
 

@@ -22,9 +22,6 @@ export enum EdgeEventsType {
 export interface EnterEvent {
 	/*
 	  * @type {number} The ObjectID of this enter event. 
-	  * NOTE: This is not necessarily the objectID that will appear in all of the `events` simply due to event collation, 
-	  * but it is a general ID that we use to identify different enter and exit events
-	  *
 	  * @memberof EnterEvent
 	  * */
 	id: number;
@@ -55,9 +52,6 @@ export interface EnterEvent {
 export interface ExitEvent {
 	/*
 	  * @type {number} The ObjectID of this exit event. 
-	  * NOTE: This is not necessarily the objectID that will appear in all of the `events` simply due to event collation, 
-	  * but it is a general ID that we use to identify different enter and exit events
-	  *
 	  * @memberof ExitEvent
 	  * */
 	id: number;
@@ -99,9 +93,6 @@ export interface ExitEvent {
 export interface FinalizedEvent {
 	/*
 	  * @type {number} The ObjectID of this enter event. 
-	  * NOTE: This is not necessarily the objectID that will appear in all of the `data` events simply due to event collation, 
-	  * but it is a general ID that we use to identify different enter and exit events
-	  *
 	  * @memberof FinalizedEvent
 	  * */
 	id: number;
@@ -241,7 +232,7 @@ export const ExitEventsFromMap = (events: Map<number, HumanEvent[]>): ExitEvent[
   * @param {EnterEvent} [a] The first enter event
   * @param {EnterEvent} [b] The second enter event
   *
-  * @return {boolean} Returns the true if both of the events are the same
+  * @return {boolean} Returns true if both of the events are the same
   * */
 export const EventsAreTheSame = (a: EnterEvent, b: EnterEvent): boolean => {
 	const aFirst = a.events[0];
