@@ -1,4 +1,5 @@
 import { HumanEvent } from "../../types/human_event"
+import { Environment } from "../../environment/environment"
 
 /*
   *
@@ -18,8 +19,12 @@ export const IsolateEdgeEvents = (allEvents: Map<number, HumanEvent[]>): Map<num
 		// The last event is what matters for us, since this isolator is only used for the exit event detection pipeline
 		const event = events[events.length - 1];
 
+		// Edge values
+		const smallEdge = Environment.EdgeEventDetectionDistanceFromEdge;
+		const largeEdge = 1 - Environment.EdgeEventDetectionDistanceFromEdge;
+
 		// If the position of the event is above our threshold, then we can add the events to our edge events map
-		if (event.position.y < 0.4 || event.position.y > 0.6 || event.position.x < 0.4 || event.position.x > 0.6)
+		if (event.position.y < smallEdge || event.position.y > largeEdge || event.position.x < smallEdge || event.position.x > largeEdge)
 			edgeEvents.set(event.id, events);
 
 	});

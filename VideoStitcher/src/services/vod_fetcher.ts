@@ -23,33 +23,6 @@ const axios = require('axios').default;
   * */
 import * as fs from "fs";
 
-/*
-  *
-  * @export
-  * @interface Result after calling `FetchVOD`
-  * */
-export interface FetchVODResult {
-	/*
-	  * 
-	  * @type {string} The path of the clip mp4
-	  * @memberof FetchVODResult
-	  * */
-	clipPath: string;
-
-	/*
-	  *
-	  * @type {string} The path where our mp4 clip is stored. This will make it easy for us to store other assets like frames in the same directory
-	  * @memberof FetchVODResult
-	  * */
-	directoryPath: string;
-
-	/*
-	  * 
-	  * @type {number} The startTime timestamp in seconds since epoch of our clip
-	  * @memberof FetchVODResult
-	  * */
-	timestamp: number;
-};
 
 /*
   *
@@ -93,12 +66,12 @@ export const saveClip = async (path: string, uri: string, write: boolean = false
   * @param {string} [federatedToken] the federated token which will be used to download the files. Without this we would get a 401 authentication error
   * @param {ConnectionType} [type] Whether to use LAN or WAN for the connection, by default LAN and unless you are on a different connection, you should really just use LAN
   * @param {string} [uri] the VOD uri to download from
-  * @param {string} [duration] the duration in seconds of the clip to download
-  *
-  * @return {Promise<FetchVODResult>} Returns the path of the downloaded vod mp4 and the directory in which that downloaded mp4 is in. 
-  * 				      It will also return the timestamp in seconds since epoch of the startTime of the clip
+  * @param {string} [dir] The directory where the output clip will be placed
+  * @param {string} [fileName] The name of the file to output
+  * @param {number} [startTime] The start timestamp in miliseconds in the VOD to start downloading at
+  * @param {number} [endTime] The end timestamp in miliseconds in the VOD to stop downloading at
   * */
-export const FetchVOD = async (config: Configuration, federatedToken: string, uri: string, type: ConnectionType, dir: string, fileName: string, startTime: number, endTime: number): Promise<FetchVODResult> => {
+export const FetchVOD = async (config: Configuration, federatedToken: string, uri: string, type: ConnectionType, dir: string, fileName: string, startTime: number, endTime: number): Promise<void> => {
 	const duration = endTime - startTime + 1;
 
 	// We need to replace {START_TIME} and {DURATION} with the correct values in order to properly download the file
@@ -119,7 +92,7 @@ export const FetchVOD = async (config: Configuration, federatedToken: string, ur
 	if (!fs.existsSync(dir))
 		fs.mkdirSync(dir);
 
-	// The path of the clip is dir/clip.mp4 regardless of timestamp. The file is always called clip.mp4
+	// Get the output path of the clip
 	const path = dir + fileName;
 
 	// This will change depend on whether we are using WAN or LAN
@@ -136,11 +109,4 @@ export const FetchVOD = async (config: Configuration, federatedToken: string, ur
 		// These files will need to be appended to our existing clip.mp4 in disk
 		await saveClip(path, fullURI.replace(mpdName, "seg_" + i + ".m4v"));
 	}
-
-	// Return our data
-	return {
-		clipPath: path,
-		directoryPath: dir,
-		timestamp: startTime,
-	};
 }

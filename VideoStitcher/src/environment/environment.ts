@@ -1,4 +1,7 @@
 export namespace Environment {
+	// The distance from the edge that should be considered for edge events from 0-1
+	export const EdgeEventDetectionDistanceFromEdge: number = Number(process.env.EDGE_EVENT_DETECTION_DISTANCE_FROM_EDGE || 0.4);
+
 	// How long before the current time should the prompter suggest human events
 	export const SuggestedHumanEventSecondsSinceCurrentTime: number = Number(process.env.SUGGESTED_HUMAN_EVENT_SECONDS_SINCE_CURRENT_TIME || 600);
 

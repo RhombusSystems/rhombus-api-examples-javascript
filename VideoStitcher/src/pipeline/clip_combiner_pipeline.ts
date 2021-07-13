@@ -77,7 +77,7 @@ export const DownloadFinalizedEventRecursive = async (configuration: Configurati
   * @export
   * @method Downloads a finalized event chain and then combines the downloaded clips into one stitched video
   *
-  * @param {Configuration} [configuration] The API configuration to use when making API requests
+  * @param {Configuration} [config] The API configuration to use when making API requests
   * @param {ConnectionType} [type] Whether to use LAN or WAN for the connection, by default LAN and unless you are on a different connection, you should really just use LAN
   * @param {FinalizedEvent} [event] The event to download the VOD from
   * @param {number} [retryIndex] The number of times retried to download
