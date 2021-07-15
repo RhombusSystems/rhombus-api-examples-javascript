@@ -6,6 +6,7 @@ import { GetHumanEvents } from "../services/human_events_service"
 import { IsolateEdgeEvents } from "./isolators/edge_event_isolator"
 import { IsolateVelocities } from "./isolators/velocity_isolator"
 import { IsolateEventsFromLength } from "./isolators/event_length_isolator"
+import { IsolateObjectIDEvents } from "./services/object_id_isolator"
 import { Camera } from "../types/camera"
 import { CompareEvents } from "../types/events"
 
@@ -37,7 +38,7 @@ export const DetectionPipeline = async (configuration: Configuration, camera: Ca
 	console.log(res.size + " humans found");
 
 	// Isolate the human events by length
-	const isolatedEvents = IsolateEventsFromLength(res);
+	const isolatedEvents = IsolateEventsFromLength(IsolateObjectIDEvents(res));
 
 	console.log(isolatedEvents.size + " were found from length and object IDs");
 
