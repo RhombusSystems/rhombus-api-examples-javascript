@@ -130,7 +130,7 @@ export const FetchVOD = async (config: Configuration, federatedToken: string, ur
 	// Because our URI is an mpd, we need to get each of the segments. The seg_init.mp4 is the first of these. 
 	// Just replace clip.mpd at the end of the URL with seg_init.mp4 
 	// This also needs to be written since this is the first of our segments
-	saveClip(path, fullURI.replace(mpdName, "seg_init.mp4"), true);
+	await saveClip(path, fullURI.replace(mpdName, "seg_init.mp4"), true);
 
 	// Each of the segments is 2 seconds long, so the number of segments is duration/2
 	for (let i = 0; i < duration / 2; i++) {
