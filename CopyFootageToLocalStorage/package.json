@@ -1,0 +1,30 @@
+{
+  "name": "copy_footage_to_local_storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "start-dev": "nodemon index.ts",
+    "release": "node dist/index.js",
+    "build": "tsc --outDir dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RhombusSystems/rhombus-api-examples-javascript"
+  },
+  "author": "Rhombus Systems",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RhombusSystems/rhombus-api-examples-javascript/issues"
+  },
+  "dependencies": {
+    "@rhombus/API": "file:../RhombusTypescriptAPI",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^10.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
+  },
+  "homepage": "https://github.com/RhombusSystems/rhombus-api-examples-javascript#readme"
+}
