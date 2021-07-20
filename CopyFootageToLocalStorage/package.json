@@ -15,7 +15,7 @@
     "url": "git+https://github.com/RhombusSystems/rhombus-api-examples-javascript"
   },
   "author": "Rhombus Systems",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/RhombusSystems/rhombus-api-examples-javascript/issues"
   },
