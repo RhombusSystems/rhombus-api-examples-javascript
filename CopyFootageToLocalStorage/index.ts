@@ -23,9 +23,11 @@
 import { Configuration, CameraWebserviceApi, OrgWebserviceApi } from "@rhombus/API"
 import * as path from "path"
 import * as fs from "fs"
+import { XMLParser } from "fast-xml-parser";
+
 /*
   *
-  * @import Import axios to download the vod
+  * @import Import axios to download the vod.
   * */
 const axios = require('axios').default;
 
@@ -115,6 +117,68 @@ const getConnectionType = (): ConnectionType => {
 		return ConnectionType.WAN;
 	}
 	return ConnectionType.LAN;
+}
+
+/*
+  * 
+  * @export
+  * @interface RhombusMPDInfo
+  *
+  * */
+export interface RhombusMPDInfo {
+	/*
+	  * @type {string} The pattern containing "$Number$" which can be replaced with an index that is incremented for each segment.
+	  * @memberof RhombusMPDInfo
+	  * */
+	segPattern: string;
+
+	/*
+	  * @type {string} The string which is appended to the end of the mpd URI to get the start mp4 file.
+	  * @memberof RhombusMPDInfo
+	  * */
+	segInitStr: string;
+
+	/*
+	  * @type {number} The starting index which will be incremented for each segment.
+	  * @memberof RhombusMPDInfo
+	  * */
+	startIndex: number;
+}
+
+/*
+  *
+  * @export 
+  * @method Parse relevant information from a raw MPD XML string.
+  *
+  * @param {string} [mpdDocRaw] the raw XML string that is retrieved from downloading the mpd document from a Rhombus URI.
+  * @return {RhombusMPDInfo} the info relevant to downloading from MPD stream.
+  * */
+export const parseRhombusMPD = (mpdDocRaw: string): RhombusMPDInfo => {
+	const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
+	const mpdDoc = parser.parse(mpdDocRaw);
+
+	const segmentTemplate = mpdDoc.MPD.Period.AdaptationSet.SegmentTemplate;
+
+	return {
+		segPattern: segmentTemplate.media,
+		segInitStr: segmentTemplate.initialization,
+		startIndex: parseInt(segmentTemplate.startNumber),
+	};
+}
+
+/*
+  *
+  * @export 
+  * @method Save an m4v or mp4 url to the specified output file
+  *
+  * @param {number} [index] the segment index starting at 0.
+  * @param {string} [mpdUri] the MPD URI with the correct start and end times. This should have a file.mpd or clip.mpd ending.
+  * @param {RhombusMPDInfo} [rhombusInfo] the MPD info parsed using `parseRhombusMPD(string)`.
+  * @param {string} [mpdName] either "file.mpd" or "clip.mpd", depending on if you are using WAN or LAN.
+  * */
+export const getSegmentURI = (index: number, mpdUri: string, rhombusInfo: RhombusMPDInfo, mpdName: string): string => {
+	const replacement = rhombusInfo.segPattern.replace("$Number$", (index + rhombusInfo.startIndex).toString());
+	return mpdUri.replace(mpdName, replacement);
 }
 
 /*
@@ -228,12 +292,21 @@ const main = async (apiKey: string | undefined, outputPath: string | undefined, 
 
 		debugLog("Camera media uri response: " + JSON.stringify(mediaRes, null, 2));
 
-		if (mediaRes.lanVodMpdUrisTemplates == undefined) {
-			errorLog("Failed to get media URIs");
-			return;
-		}
+		if (connectionType == ConnectionType.LAN) {
+			if (mediaRes.lanVodMpdUrisTemplates == undefined) {
+				errorLog("Failed to get media URIs");
+				return;
+			}
 
-		mpdUriTemplate = mediaRes.lanVodMpdUrisTemplates[0];
+			mpdUriTemplate = mediaRes.lanVodMpdUrisTemplates[0];
+		} else {
+			if (mediaRes.wanVodMpdUriTemplate == undefined) {
+				errorLog("Failed to get media URIs");
+				return;
+			}
+
+			mpdUriTemplate = mediaRes.wanVodMpdUriTemplate;
+		}
 
 		debugLog("Raw mpd uri template: " + mpdUriTemplate);
 	} catch (e) {
@@ -243,7 +316,7 @@ const main = async (apiKey: string | undefined, outputPath: string | undefined, 
 
 
 	// We need to replace {START_TIME} and {DURATION} with the correct values in order to properly download the file
-	let mpdUri = mpdUriTemplate.replace("{START_TIME}", startTime.toString()).replace("{DURATION}", duration.toString());
+	let mpdUri: string = mpdUriTemplate.replace("{START_TIME}", startTime.toString()).replace("{DURATION}", duration.toString());
 
 	debugLog("Mpd uri: " + mpdUri);
 
@@ -259,10 +332,14 @@ const main = async (apiKey: string | undefined, outputPath: string | undefined, 
 	// The federated token is set as a cookie. Without this we would be unable to download the files from Rhombus
 	axios.defaults.headers.common['Cookie'] = 'RSESSIONID=RFT:' + federatedSessionToken;
 
-	// Because our URI is an mpd, we need to get each of the segments. The seg_init.mp4 is the first of these. 
-	// Just replace clip.mpd at the end of the URL with seg_init.mp4 
-	// This also needs to be written since this is the first of our segments
-	const initSegUri = mpdUri.replace(mpdName, "seg_init.mp4");
+	// Get the Rhombus MPD Doc info.
+	const mpdDocRaw = await axios.get(mpdUri, { responseType: 'json' });
+	const rhombusMPDInfo = parseRhombusMPD(mpdDocRaw.data);
+
+	// Because our URI is an mpd, we need to get each of the segments. The rhombusMPDInfo.segInitStr initializes the MP4 file. 
+	// Just replace clip.mpd at the end of the URL with the segInitStr.
+	// This also needs to be written since this is the first of our segments.
+	const initSegUri = mpdUri.replace(mpdName, rhombusMPDInfo.segInitStr);
 	debugLog("Init segment uri: " + initSegUri);
 	await saveClip(outputPath, initSegUri, true);
 
@@ -270,7 +347,7 @@ const main = async (apiKey: string | undefined, outputPath: string | undefined, 
 	for (let i = 0; i < duration / 2; i++) {
 		// The URI of all subsequent segments will replace clip.mpd with seg_<index>.m4v
 		// These files will need to be appended to our existing clip.mp4 in disk
-		const uri = mpdUri.replace(mpdName, "seg_" + i + ".m4v");
+		const uri = getSegmentURI(i, mpdUri, rhombusMPDInfo, mpdName);
 		await saveClip(outputPath, uri);
 		debugLog("Saved segment: " + uri)
 	}

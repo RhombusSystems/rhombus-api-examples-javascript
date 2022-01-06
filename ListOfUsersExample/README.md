@@ -21,11 +21,11 @@ NOTE: If you have already generated the Typescript client and have a RhombusType
 4. Run `npm install` in the ListOfUsersExample directory
 5. Create a `.env` file in the ListOfUsersExample source directory using the following structure (without the angle brackets)
 
-    API_KEY=<YOUR API KEY>
+    API_KEY=`<YOUR API KEY>`
 
-    OUTPUT_PATH=<PATH TO OUTPUT CSV>
+    OUTPUT_PATH=`<PATH TO OUTPUT CSV>`
 
-    NAMES=<COMMA SEPARATED NAMES IN QUOTES> 
+    NAMES=`<COMMA SEPARATED NAMES IN QUOTES>`
 
 The `NAMES` parameter is optional. It will filter the users and only output users with the specified names
 
