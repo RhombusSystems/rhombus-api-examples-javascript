@@ -21,11 +21,11 @@ NOTE: If you have already generated the Typescript client and have a RhombusType
 4. Run `npm install` in the ExtendedAIModule directory
 5. Create a `.env` file in the ExtendedAIModule source directory using the following structure (without the angle brackets)
 
-    API_KEY=<YOUR API KEY>
+    API_KEY=`<YOUR API KEY>`
 
-    CAM_UUID=<YOUR CAMERA UUID>
+    CAM_UUID=`<YOUR CAMERA UUID>`
 
-    CONNECTION_TYPE=<WAN OR LAN> 
+    CONNECTION_TYPE=`<WAN OR LAN>`
 
 NOTE: CONNECTION_TYPE parameter is optional, but it will specify whether to use a WAN or LAN connection from the camera to download the VODs. It is by default LAN and unless the NodeJS server is running on a separate wifi from the camera, which would be very unlikely...
 6. Run the example using `npm run start`

@@ -21,21 +21,21 @@ NOTE: If you have already generated the Typescript client and have a RhombusType
 4. Run `npm install` in the CopyFootageToLocalStorage directory
 5. Create a `.env` file in the CopyFootageToLocalStorage source directory using the following structure (without the angle brackets)
 
-    API_KEY=<YOUR API KEY>
+    API_KEY=`<YOUR API KEY>`
 
-    CAMERA_UUID=<YOUR CAMERA UUID>
+    CAMERA_UUID=`<YOUR CAMERA UUID>`
 
-    OUTPUT=<OUTPUT mp4 PATH>
+    OUTPUT=`<OUTPUT mp4 PATH>`
 
     # Other optional parameters
     
-    START_TIME=<START TIME IN SECONDS SINCE EPOCH>
+    START_TIME=`<START TIME IN SECONDS SINCE EPOCH>`
 
-    DURATION=<DURATION IN SECONDS>
+    DURATION=`<DURATION IN SECONDS>`
 
-    DEBUG=<TRUE or FALSE>
+    DEBUG=`<TRUE or FALSE>`
 
-    CONNECTION_TYPE=<WAN OR LAN> 
+    CONNECTION_TYPE=`<WAN OR LAN>`
 
 
 NOTE: CONNECTION_TYPE parameter is optional, but it will specify whether to use a WAN or LAN connection from the camera to download the VODs. It is by default LAN and unless the NodeJS server is running on a separate wifi from the camera, which would be very unlikely...
