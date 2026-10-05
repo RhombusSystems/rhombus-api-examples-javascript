@@ -1,7 +1,7 @@
 # Rhombus Copy Footage To Local Storage
 
 ## What is this
-Rhombus copy footage to local storage is a NodeJS server application written in Typescript that downloads footage from Rhombus Systems cameras. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
+Rhombus copy footage to local storage is a NodeJS server application written in Typescript that downloads footage from Rhombus Systems cameras. This is an example of how to use the [Rhombus API](https://developer.rhombus.com/). This is NOT a production ready example, it is for demonstrational purposes only
 
 The code demos how to send API requests to Rhombus using API token authentication and how to download VODs from Rhombus.
 

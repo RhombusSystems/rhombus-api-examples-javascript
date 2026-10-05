@@ -1,7 +1,7 @@
 # Rhombus List of Users Example
 
 ## What is this
-Rhombus list of users example is a NodeJS server application written in Typescript that gets a report of all of the users and their emails and outputs to a CSV. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
+Rhombus list of users example is a NodeJS server application written in Typescript that gets a report of all of the users and their emails and outputs to a CSV. This is an example of how to use the [Rhombus API](https://developer.rhombus.com/). This is NOT a production ready example, it is for demonstrational purposes only
 
 The code demos how to send API requests to Rhombus using API token authentication and how to use that data to create a CSV
 

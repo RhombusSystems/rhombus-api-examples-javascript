@@ -1,7 +1,7 @@
 # Rhombus Video Stitcher
 
 ## What is this
-Rhombus Video Stitcher is a NodeJS server application written in Typescript that attempts to automatically stitch together different video clips to follow someone around seemlessly. This is an example of how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). This is NOT a production ready example, it is for demonstrational purposes only
+Rhombus Video Stitcher is a NodeJS server application written in Typescript that attempts to automatically stitch together different video clips to follow someone around seemlessly. This is an example of how to use the [Rhombus API](https://developer.rhombus.com/). This is NOT a production ready example, it is for demonstrational purposes only
 
 The code demos how to send API requests to Rhombus using API token authentication and how to download VODs from Rhombus.
 

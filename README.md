@@ -1,7 +1,7 @@
 # Rhombus API Examples Javascript
 
 ## What is this
-This repo contains demo code samples in NodeJS using Javascript and Typescript that show how to use the [Rhombus API](https://apidocs.rhombussystems.com/reference). 
+This repo contains demo code samples in NodeJS using Javascript and Typescript that show how to use the [Rhombus API](https://developer.rhombus.com/api-reference/overview). 
 
 This repo uses [Rhombus Codegen](https://github.com/RhombusSystems/rhombus-api-examples-codegen) to interface with the API for many of its examples
 
