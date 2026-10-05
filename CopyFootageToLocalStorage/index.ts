@@ -355,7 +355,7 @@ const main = async (apiKey: string | undefined, outputPath: string | undefined, 
 	infoLog("Succesfully downloaded video.");
 }
 
-// Get the API Key from the environment, for more info see https://apidocs.rhombussystems.com/reference#introduction
+// Get the API Key from the environment, for more info see https://developer.rhombus.com/
 //
 // Set this by creating a ".env" file in the root source directory with the contents: API_KEY=<YOUR API KEY HERE>
 // Example: API_KEY=Rh0MbU$-iS-AwEs0M3
